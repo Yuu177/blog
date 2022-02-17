@@ -180,19 +180,15 @@ func main() {
 
 ### 格式化打印
 
-- 打印结构体 Struct
+`%v` 按默认格式输出
 
-`%v` : 默认正常打印结构体
+`%+v` 在 %v 的基础上额外输出字段名
 
-`%+v` : 以带字段名称的方式打印结构体
+`%#v` 在 `%+v` 的基础上额外输出类型名
 
-`%#v` : 以 golang 语法的方式打印结构体
+`%t` 打印布尔值：true / false
 
-- 布尔值 Boolean
-
-`%t` : 打印布尔值：true / false
-
-- fmt.Printf("%%\n") // 不转义输出一个 %
+`fmt.Printf("%%\n")` // 不转义输出一个 %
 
 ### generate
 
@@ -245,23 +241,200 @@ func constructTime() time.Time {
 
 - 参考链接
 
-  [Golang 时间操作大全](https://blog.csdn.net/asd1126163471/article/details/112504777?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_paycolumn_v3&spm=1001.2101.3001.4242.2&utm_relevant_index=4)
+[Golang 时间操作大全](https://blog.csdn.net/asd1126163471/article/details/112504777?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-1.pc_relevant_paycolumn_v3&spm=1001.2101.3001.4242.2&utm_relevant_index=4)
 
-## go 工具安装
+### json
+
+- 序列化（编码）
+
+```go
+// NewEncoder 创建一个将数据写入 w 的 Encoder。
+func NewEncoder(w io.Writer) Encoder
+// Encode 将 v 的 json 编码写入输出流，并会写入一个换行符
+func (enc *Encoder) Encode(v interface{}) error
+// Marshal 函数返回 v 的 json 编码。
+func Marshal(v interface{}) ([]byte, error)
+```
+
+- 反序列化（解码）
+
+```go
+// NewDecoder 创建一个从 r 读取并解码 json 对象的 Decoder，解码器有自己的缓冲，并可能超前读取部分 json 数据
+func NewDecoder(r io.Reader) Decoder
+// Decode 从输入流读取下一个 json 编码值并保存在 v 指向的值里，参见 Unmarshal 函数的文档获取细节信息。
+func (dec *Decoder) Decode(v interface{}) error
+// Unmarshal 函数解析 json 编码的数据并将结果存入 v 指向的值。
+func Unmarshal(data []byte, v interface{}) error
+```
+
+- 实例代码
+
+```go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+)
+
+type Student struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+func main() {
+	st := Student{Name: "panyu", Age: 18}
+
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.Encode(st) // 序列化
+	fmt.Println(buf.String())
+
+	st1 := Student{}
+	json.Unmarshal(buf.Bytes(), &st1) // 反序列化
+	fmt.Printf("st1: %+v\n", st1)
+
+	bts, _ := json.Marshal(st) // 序列化
+
+	r := bytes.NewBuffer(bts)
+	decoder := json.NewDecoder(r)
+	st2 := Student{}
+	decoder.Decode(&st2) // 反序列化
+	fmt.Printf("st2: %+v\n", st2)
+}
+
+```
+
+- **JSON 的 Encode/Decode，Marshal/Unmarshal 之间的关系和区别？**
+
+In the `encoding/json` package, the `Marshal` function and the inverse `Unmarshal` function return and operate on single fixed bytes slices. They transform single objects to bytes, and vice versa.
+
+There are also the `Encoder` and `Decoder` types. These contain the `Encode` and `Decode` methods, and they operate on streams of bytes, taking an `io.Reader` and `io.Writer` respectively. They also allow multiple objects to be serialized or deserialized with a newline delimiter using those streams.
+
+The underlying mechanisms of `Marshal/Unmarsha`l functions and the `Encoder/Decoder` types are identical, they both use the same internal `encodeState.marshal` and `decodeState.unmarshal` codepaths. The only real difference is they provide alternative access for various usage patterns.
+
+- 总结一下就是：`Encode/Decode`，`Marshal/Unmarshal` 方法底层调用的都是同一个方法进行序列化或者反序列化。
+
+- 未知格式的 json
+
+上面的代码是我们解析已知的固定格式的 json。但是有时候我们拿到的 json 是未知格式的。那么我们可以用第三方包  simplejson 去解析。参考链接：https://studygolang.com/articles/31227
+
+### 读写文件
+
+- read
+
+```go
+func readFile(fileName string) {
+	fd, err := os.Open(fileName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer fd.Close()
+	b := bufio.NewReader(fd)
+	for {
+		line, err := b.ReadString('\n') // 遇到换行结束
+		if err != nil {
+			break
+		}
+		line = strings.Trim(line, "\n") // 注意这里会把换行读取进来，需要去掉
+        fmt.Println(line)
+	}
+	return
+}
+```
+
+- write
+
+```go
+func save2File(data []byte, filePath string) {
+	f, err := os.OpenFile(filePath, os.O_TRUNC|os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	_, err = f.Write(data)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	f.Close()
+}
+```
+
+## go 工具
 
 ### protoc-gen-go
 
 - 安装命令
 
-  `go get -u github.com/golang/protobuf/protoc-gen-go` 
+`go get -u github.com/golang/protobuf/protoc-gen-go` 
 
 - 问题补充
 
-  `go get -u github.com/golang/protobuf/protoc-gen-go` 这个时候下载是在 GOPATH 下。需要把 protoc-gen-go mv 到 /usr/local/bin/。或者系统 PATH 设置有 GOPATH 路径那就不用移动。
+`go get -u github.com/golang/protobuf/protoc-gen-go` 这个时候下载是在 GOPATH 下。需要把 protoc-gen-go mv 到 /usr/local/bin/。或者系统 PATH 设置有 GOPATH 路径那就不用移动。
 
 - 参考链接
 
-  https://mp.weixin.qq.com/s/ntYd-b0f7YU7wOaWOHGGzQ
+https://mp.weixin.qq.com/s/ntYd-b0f7YU7wOaWOHGGzQ
+
+### msgp
+
+msgp 是 MessagePack 的缩写，是一种高效的二进制序列化格式工具。基本 JSON 能做的事，msgp 都能做，而且比 JSON 更快，更小。
+
+- 安装命令
+
+`go get github.com/tinylib/msgp `
+
+- 代码结构
+
+```bash
+.
+├── go.mod
+├── go.sum
+├── main.go
+└── protocol
+    ├── protocol.go
+    ├── protocol_gen.go
+    └── protocol_gen_test.go
+```
+
+实例代码
+
+`protocol.go`
+
+```go
+//go:generate msgp
+package protocol
+
+type Student struct {
+	Name string
+	Age  int
+}
+```
+
+`main.go`
+
+```go
+package main
+
+import (
+	"bytes"
+	"fmt"
+	"test/protocol"
+
+	"github.com/tinylib/msgp/msgp"
+)
+
+func main() {
+	var bufEncode bytes.Buffer
+
+	st := protocol.Student{Name: "xiaobai", Age: 18}
+	msgp.Encode(&bufEncode, &st) // 把 st 序列化后往 bufEncode 写入数据
+
+	st1 := protocol.Student{}
+	msgp.Decode(&bufEncode, &st1) // 反序列化
+	fmt.Printf("st1: %v\n", st1)
+}
+```
 
 ## go 杂项问题
 
