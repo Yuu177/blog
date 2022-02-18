@@ -1,5 +1,9 @@
 [TOC]
 
+## 学习内容
+
+![学习思维导图](.resource/golang 基础学习.jpeg)
+
 ## 名词解释
 
 ### GOPATH 和 GOROOT
