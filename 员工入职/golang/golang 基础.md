@@ -78,6 +78,8 @@ func main() {
 
 ### 网络编程
 
+- 一些乱七八糟的代码
+
 ```go
 package main
 
@@ -113,6 +115,38 @@ func main() {
 
 ```
 
+#### http
+
+- mux.HandleFunc
+
+```go
+mux := http.NewServeMux()
+mux.HandleFunc("/api", apiFunc)
+mux.HandleFunc("/", indexFunc)
+server := http.Server {
+    Addr: "127.0.0.1:3001",
+    Handler: mux,
+}
+server.ListenAndServe()
+```
+
+- http.HandleFunc
+
+```go
+http.HandleFunc("/api", apiFunc)
+http.HandleFunc("/", indexFunc)
+http.ListenAndServe("127.0.0.1:3001", nil)
+```
+
+它们的区别是啥？通过查看 http 包的 HandleFunc 源码可以看出来。我们是用了 DefaultServerMux。第一种相当于自己管理 ServeMux 实例。第二种则是用 go 提供的默认实例。
+
+```go
+func HandleFunc(pattern string, handler func(ResponseWriter, *Request)) {
+	DefaultServeMux.HandleFunc(pattern, handler)
+}
+```
+
+参考链接：https://ask.csdn.net/questions/1011378
 
 ### Mutex
 
@@ -166,17 +200,18 @@ func main() {
 ```
 
 
-### 实现接口
+### 接口
 
-`var _ I = (*T)(nil) `
+- 如何确保某个类型实现了某个接口的所有方法呢？
 
-作用：用简单的语法，检查 T 这个 struct 是否实现了 I 这个接口
+一般可以使用下面的方法进行检测，如果实现不完整，编译期将会报错。
 
-细化理解：可以把 = 左右两边分开来看
+```go
+var _ Person = (*Student)(nil)
+var _ Person = (*Worker)(nil)
+```
 
-- 左边：var _ I 等价于我们平时用的  var variable type
-
-- 右边：(* T)(nil)  等价于  var variable *T nil
+将空值 nil 转换为 *Student 类型，再转换为 Person 接口，如果转换失败，说明 Student 并没有实现 Person 接口的所有方法。
 
 ### import
 
@@ -361,6 +396,22 @@ func save2File(data []byte, filePath string) {
 		log.Fatal(err.Error())
 	}
 	f.Close()
+}
+```
+
+### 闭包
+
+- 闭包就是函数返回一个匿名函数
+
+匿名函数是一个“内联“语句或表达式。匿名函数的优越性在于可以直接使用函数内的变量。
+
+```go
+func myfunc() func() int { // 返注意返回值，这里返回一个函数
+    i := 0
+    return func() int { // 匿名函数
+        i += 1 // 可以使用匿名函数外的变量
+        return i
+    }
 }
 ```
 
