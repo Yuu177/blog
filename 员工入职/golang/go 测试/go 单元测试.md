@@ -2,27 +2,27 @@
 
 ## 如何写好单元测试
 
-单元测试(Unit Tests, UT) 是一个优秀项目不可或缺的一部分，特别是在一些频繁变动和多人合作开发的项目中尤为重要。或多或少都会有因为自己的提交，导致应用挂掉或服务宕机的经历。
+单元测试的好处：略
 
-如果这个时候你的修改导致测试用例失败，你再重新审视自己的修改，发现之前的修改还有一些特殊场景没有包含，那就会减少了一次上库失误。
+函数/方法写法不同，测试难度也是不一样的。职责单一，参数类型简单，与其他函数耦合度低的函数往往更容易测试。
 
-也会有这样的情况，项目很大，启动环境很复杂，你优化了一个函数的性能，或是添加了某个新的特性，如果部署在正式环境上之后再进行测试，成本太高。对于这种场景，几个小小的测试用例或许就能够覆盖大部分的测试场景。
+“这种代码没法测试“这种时候，就得思考函数的写法可不可以改得更好一些。为了代码可测试而重构是值得的。（~~现实中是不可能的，特别祖传代码还是不要动好~~） 
 
-而且在开发过程中，效率最高的莫过于所见即所得了，单元测试也能够帮助你做到这一点，试想一下，假如一口气写完一千行代码，debug 的过程也不会轻松，如果在这个过程中，对于一些逻辑较为复杂的函数，同时添加一些测试用例，即时确保正确性，最后集成的时候，会是另外一番体验。
+下面介绍如何使用 Go 语言的标准库 testing 进行单元测试。
 
-**如何写好单元测试呢？**
+## 测试函数简单介绍
 
-高内聚，低耦合是软件工程的原则，同样，对测试而言，函数/方法写法不同，测试难度也是不一样的。职责单一，参数类型简单，与其他函数耦合度低的函数往往更容易测试。
+go test 命令是一个按照一定的约定和组织来测试代码的程序。在包目录内，所有以 _test.go 为后缀名的源文件在执行 go build 时不会被构建成包的一部分，它们是 go test 测试的一部分。
 
-我们经常会说，“这种代码没法测试”，这种时候，就得思考函数的写法可不可以改得更好一些。为了代码可测试而重构是值得的。
+在 *_test.go 文件中，有三种类型的函数：单元测试函数、基准测试(benchmark)函数、示例函数（这个就不介绍了）。
 
-接下来将介绍如何使用 Go 语言的标准库 testing 进行单元测试。
+## 单元测试函数
 
-## 一个简单例子
+### 单元测试函数介绍
 
 Go 语言推荐测试文件和源代码文件放在一块，测试文件以 _test.go 结尾。
 
-比如，当前 package 有 calc.go 一个文件，我们想测试 calc.go 中的 Add 和 Mul 函数，那么应该新建 calc_test.go 作为测试文件。
+比如，当前文件夹下有 calc.go 一个文件，我们想测试 calc.go 中的 `Add` 和 `Mul` 函数，那么应该新建 calc_test.go 作为测试文件。
 
 ```bash
 example/
@@ -30,7 +30,7 @@ example/
    |--calc_test.go
 ```
 
-假如 calc.go 的代码如下：
+calc.go 的代码如下：
 
 ```go
 package main
@@ -62,31 +62,48 @@ func TestAdd(t *testing.T) {
 }
 ```
 
-- 测试用例名称一般命名为 Test 加上待测试的方法名。
-- 测试用的参数有且只有一个，在这里是 t *testing.T。
-- 基准测试(benchmark)的参数是 *testing.B，TestMain 的参数是 *testing.M 类型（下面会讨论这两种）。
+**运行测试用例** `go test -v -cover`
 
-运行 go test，该 package 下所有的测试用例都会被执行。
+- go test，该文件夹下所有的测试用例都会被执行。
 
-或 go test -v，-v 参数会显示每个用例的测试结果，另外 -cover 参数可以查看覆盖率（分支覆盖率）。
+- -v 参数会显示每个用例的测试结果。
+- -cover 参数可以查看覆盖率（分支覆盖率）。
 
-如果只想运行其中的一个用例，例如 TestAdd，可以用 -run 参数指定，该参数支持通配符 *，和部分正则表达式。
+**结果输出**
 
-子测试(Subtests)
+```bash
+=== RUN   TestAdd
+--- PASS: TestAdd (0.00s)
+PASS
+coverage: 100.0% of statements
+ok      tpy/example     0.606s
+```
 
-子测试是 Go 语言内置支持的，可以在某个测试用例中，根据测试场景使用 t.Run 创建不同的子测试用例：
+如果只想运行其中的一个用例，例如 TestAdd，可以用 `-run` 参数指定，该参数支持通配符 `*`，和部分正则表达式。`go test -run TestAdd`
+
+**小结**
+
+- 测试文件以 `_test.go` 结尾，通常建议和源文件同一个目录。
+
+- 测试用例名称一般命名为 Test 加上待测试的方法名（驼峰或者下划线）。且参数有且只有一个，在这里是 `t *testing.T`。
+- `go test` 运行该文件夹下所有的测试用例。
+
+### 子测试(Subtests)
+
+子测试是指我们可以在单元测试中启动多个测试用例。
+
+子测试是 Go 语言内置支持的，可以在某个测试用例中，根据测试场景使用 `t.Run` 创建不同的子测试用例：
 
 ```go
 // calc_test.go
-
 func TestMul(t *testing.T) {
-	t.Run("pos", func(t *testing.T) {
+	t.Run("first", func(t *testing.T) {
 		if Mul(2, 3) != 6 {
 			t.Fatal("fail")
 		}
 
 	})
-	t.Run("neg", func(t *testing.T) {
+	t.Run("second", func(t *testing.T) {
 		if Mul(2, -3) != -6 {
 			t.Fatal("fail")
 		}
@@ -94,21 +111,21 @@ func TestMul(t *testing.T) {
 }
 ```
 
-- 之前的例子测试失败时使用 t.Error/t.Errorf，这个例子中使用 t.Fatal/t.Fatalf，区别在于前者遇错不停，还会继续执行其他的测试用例，后者遇错即停。
+- 之前的例子测试失败时使用 `t.Error/t.Errorf`，这个例子中使用 `t.Fatal/t.Fatalf`，区别在于前者遇错不停，还会继续执行其他的测试用例，后者遇错即停。
 
-运行某个测试用例的子测试：
+运行测试用例的子测试：
 
 ```go
-$ go test -run TestMul/pos -v
+$ go test -run TestMul/first -v
 === RUN   TestMul
-=== RUN   TestMul/pos
+=== RUN   TestMul/first
 --- PASS: TestMul (0.00s)
-    --- PASS: TestMul/pos (0.00s)
+    --- PASS: TestMul/first (0.00s)
 PASS
 ok      example 0.008s
 ```
 
-对于多个子测试的场景，更推荐如下的写法(table-driven tests)：
+对于多个子测试的场景，更推荐如下的写法，表格驱动(table-driven tests)
 
 ```go
 //  calc_test.go
@@ -141,7 +158,13 @@ func TestMul(t *testing.T) {
 
 如果数据量较大，或是一些二进制数据，推荐使用相对路径从文件中读取。
 
-## 帮助函数(helpers)
+**小结**
+
+- `t.Run` 创建子测试用例
+- go test -run TestCases/subCase 运行某个用例下的某个子测试用例
+- 多个子测试的场景建议采用 table-driven tests 写法
+
+### 帮助函数(helpers)
 
 对一些重复的逻辑，抽取出来作为公共的帮助函数(helpers)，可以增加测试代码的可读性和可维护性。 借助帮助函数，可以让测试用例的主逻辑看起来更清晰。
 
@@ -181,11 +204,11 @@ exit status 1
 FAIL    example 0.007s
 ```
 
-可以看到，错误发生在第 11 行，也就是帮助函数 createMulTestCase 内部。18, 19, 20 行都调用了该方法，我们第一时间并不能够确定是哪一行发生了错误。有些帮助函数还可能在不同的函数中被调用，报错信息都在同一处，不方便问题定位。
+可以看到，错误发生在第 11 行，也就是帮助函数 `createMulTestCase` 内部。但 18, 19, 20 行都调用了该方法，我们第一时间并不能够确定是哪一行发生了错误。报错信息都在同一处，不方便问题定位。
 
-因此，Go 语言在 1.9 版本中引入了 t.Helper()，用于标注该函数是帮助函数，报错时将输出帮助函数调用者的信息，而不是帮助函数的内部信息。
+因此，Go 语言在 1.9 版本中引入了 `t.Helper()`，用于标注该函数是帮助函数，报错时将输出帮助函数调用者的信息，而不是帮助函数的内部信息。
 
-修改 createMulTestCase，取消注释 t.Helper()
+修改 `createMulTestCase`，取消注释 `t.Helper()`
 
 运行 go test，报错信息如下，可以非常清晰地知道，错误发生在第 20 行。
 
@@ -198,14 +221,18 @@ exit status 1
 FAIL    example 0.006s
 ```
 
-关于 helper 函数的 2 个建议：
+关于 helper 函数的 建议：
 
-- 不要返回错误， 帮助函数内部直接使用 t.Error 或 t.Fatal 即可，在用例主逻辑中不会因为太多的错误处理代码，影响可读性。
-- 调用 t.Helper() 让报错信息更准确，有助于定位。
+- 不要返回错误， 帮助函数内部直接使用 `t.Error` 或 `t.Fatal` 即可，在用例主逻辑中不会因为太多的错误处理代码，影响可读性。
 
-## setup 和 teardown
+**小结**
 
-如果在同一个测试文件中，每一个测试用例运行前后的逻辑是相同的，一般会写在 setup 和 teardown 函数中。例如执行前需要实例化待测试的对象，如果这个对象比较复杂，很适合将这一部分逻辑提取出来；
+- 对一些重复的逻辑，抽取出来作为公共的帮助函数，增加测试代码的可读性和可维护性。
+- 帮助函数中调用 `t.Helper()` 让报错信息更准确，有助于定位。
+
+### setup 和 teardown
+
+如果在同一个测试文件中，每一个测试用例运行前后的逻辑是相同的，一般会写在 `setup` 和 `teardown` 函数中。例如执行前需要实例化待测试的对象，如果这个对象比较复杂，很适合将这一部分逻辑提取出来；
 
 执行后，可能会做一些资源回收类的工作，例如关闭网络连接，释放文件等。标准库 testing 提供了这样的机制：
 
@@ -235,9 +262,9 @@ func TestMain(m *testing.M) {
 ```
 
 - 在这个测试文件中，包含有 2 个测试用例，Test1 和 Test2。
-- 如果测试文件中包含函数 TestMain，那么生成的测试将调用 TestMain(m)，而不是直接运行测试。
-- 调用 m.Run() 触发所有测试用例的执行，并使用 os.Exit() 处理返回的状态码，如果不为 0，说明有用例失败。
-- 因此可以在调用 m.Run() 前后做一些额外的准备(setup)和回收(teardown)工作。
+- 如果测试文件中包含函数 `TestMain(m *testing.M)`，那么生成的测试将调用 `TestMain(m *testing.M)`，而不是直接运行测试。
+- 调用 `m.Run()` 触发所有测试用例的执行，并使用 `os.Exit()` 处理返回的状态码，如果不为 0，说明有用例失败。
+- 因此可以在调用 `m.Run()` 前后做一些额外的准备(setup)和回收(teardown)工作。
 
 执行 go test，将会输出
 
@@ -251,11 +278,15 @@ After all tests
 ok      example 0.006s
 ```
 
-网络测试(Network)
+**小结**
 
-### TCP/HTTP
+- 如果在同一个测试文件中，每一个测试用例运行前后的逻辑是相同的，建议使用 `TestMain(m *testing.M)`。
 
-假设需要测试某个 API 接口的 handler 能够正常工作，例如 helloHandler
+### 网络测试(Network)
+
+**TCP/HTTP**
+
+假设需要测试某个 API 接口的 handler 能够正常工作，例如 `helloHandler`
 
 ```go
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -302,12 +333,12 @@ func TestConn(t *testing.T) {
 }
 ```
 
-- net.Listen("tcp", "127.0.0.1:0")：监听一个未被占用的端口，并返回 Listener。
-- 调用 http.Serve(ln, nil) 启动 http 服务。
-- 使用 http.Get 发起一个 Get 请求，检查返回值是否正确。
+- `net.Listen("tcp", "127.0.0.1:0")`：监听一个未被占用的端口，并返回 Listener。
+- 调用 `http.Serve(ln, nil)` 启动 http 服务。
+- 使用 `http.Get` 发起一个 Get 请求，检查返回值是否正确。
 - 尽量不对 http 和 net 库使用 mock，这样可以覆盖较为真实的场景。
 
-### httptest
+**httptest**
 
 针对 http 开发的场景，使用标准库 net/http/httptest 进行测试更为高效。
 
@@ -336,9 +367,13 @@ func TestConn(t *testing.T) {
 
 使用 httptest 模拟请求对象(req)和响应对象(w)，达到了相同的目的。
 
-## 以并行的方式进行测试
+**小结**
 
-单元测试的目的是独立地进行测试。尽管有些时候，测试套件会因为内部存在依赖关系而无法独立地进行单元测试，但是只要单元测试可以独立地进行，用户就可以通过并行地运行测试用例来提升测试的速度了。
+- 对 http 测试，建议使用 net/http/httptest。
+
+### 以并行的方式进行测试
+
+单元测试的目的是独立地进行测试。尽管有些时候，测试套件会因为内部存在依赖关系而无法独立地进行单元测试，但是只要单元测试可以**独立地进行**，用户就可以通过并行地运行测试用例来提升测试的速度了。
 
 ```go
 package main
@@ -366,6 +401,8 @@ func TestParallel3(t *testing.T) {
 
 结果输出
 
+- 未加 `t.Parallel()`
+
 ```bash
 tpy@C02G65GVMD6M:~/codeTest/goLangTest/unitTesting/parallelTest % go test -v
 === RUN   TestParallel1
@@ -376,8 +413,11 @@ tpy@C02G65GVMD6M:~/codeTest/goLangTest/unitTesting/parallelTest % go test -v
 --- PASS: TestParallel3 (3.00s)
 PASS
 ok      tpy/parallelTest        6.340s
+```
 
-// 加了 t.Parallel() 后再执行
+- 添加 `t.Parallel()` 代码后
+
+```bash
 tpy@C02G65GVMD6M:~/codeTest/goLangTest/unitTesting/parallelTest % go test -v
 === RUN   TestParallel1
 === PAUSE TestParallel1
@@ -395,9 +435,15 @@ PASS
 ok      tpy/parallelTest        3.336s
 ```
 
-## Benchmark 基准测试
+**小结**
 
-go 中基准测试非常直观：测试程序要做的就是将被测试的代码执行了 b.N 次，以便准确地检测出代码的响应时间，其中 b.N 的值将根据被执行的代码而改变。
+只要单元测试可以独立地进行，用户就可以通过 `t.Parallel()` 并行地运行测试用例来提升测试的速度。
+
+## 基准测试(Benchmark)
+
+### 基准测试介绍
+
+go 中基准测试非常直观：测试程序要做的就是将被测试的代码执行了 `b.N` 次，以便准确地检测出代码的响应时间，其中 `b.N` 的值将根据被执行的代码而改变。
 
 基准测试用例的定义如下：
 
@@ -410,9 +456,7 @@ func BenchmarkName(b *testing.B){
 ```
 
 - 函数名必须以 Benchmark 开头，后面一般跟待测试的函数名
-- 参数为 b *testing.B。
-- 执行基准测试时，需要添加 -bench 参数。
-- -benchmem 可以提供每次操作分配内存的次数，以及每次操作分配的字节数。
+- 参数为 `b *testing.B`。
 
 例如：
 
@@ -424,17 +468,31 @@ func BenchmarkHello(b *testing.B) {
 }
 ```
 
-运行
+运行 `go test -bench . -benchmem`
+
+- 执行基准测试时，需要添加 `-bench` 参数，`.` 表示匹配该文件夹下所有所有的基准测试。可以替换为正则表达式或者某个指定的基准测试。
+- `-benchmem` 可以提供每次操作分配内存的次数，以及每次操作分配的字节数。 
 
 ```bash
-$ go test -benchmem -bench .
-...
-// 测试函数名称       运行了多少次 平均每次耗时   每次操作分配的字节数   每次操作进行内存的分配次数
-BenchmarkHello-16   15991854   71.6 ns/op   5 B/op              1 allocs/op PASS
-ok      2.680s // 总耗时
+$ go test -bench . -benchmem
+goos: darwin
+goarch: amd64
+pkg: tpy/bechmarkTest
+cpu: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz
+BenchmarkHello-12       15309099                65.35 ns/op           16 B/op          1 allocs/op
+PASS
+ok      tpy/bechmarkTest        1.438s
 ```
 
-如果在运行前基准测试需要一些耗时的配置，则可以使用 b.ResetTimer() 先重置定时器，例如：
+对第 6 行的结果输出介绍
+
+| GOMAXPROCS | 运行了多少次 | 平均每次耗时 | 每次操作分配的字节数 | 每次操作进行内存的分配次数 |
+| ---------- | ------------ | ------------ | -------------------- | -------------------------- |
+| -12        | 15309099     | 65.35 ns/op  | 16 B/op              | 1 allocs/op                |
+
+**注意：**测试代码需要保证函数可重入性及无状态，也就是说，测试代码不使用全局变量等带有记忆性质的数据结构。避免多次运行同一段代码时的环境不一致。
+
+- 如果在运行前基准测试需要一些耗时的配置，则可以使用 `b.ResetTimer()` 先重置定时器，这样可以避免 for 循环之前的初始化代码的干扰。
 
 ```go
 func BenchmarkHello(b *testing.B) {
@@ -446,18 +504,33 @@ func BenchmarkHello(b *testing.B) {
 }
 ```
 
-使用 RunParallel 测试并发性能
+**小结**
+
+- 基准测试函数名为 `Benchmark` 开头，参数为 `b *testing.B`。
+
+- `go test -bench .` 执行基准测试，`-benchmem` 参数增加内存相关信息打印。
+- 在运行前基准测试需要一些耗时的配置，使用 `b.ResetTimer()` 重置定时器。
+
+### 测试并发性能
+
+- 使用 `b.RunParallel` 测试并发性能
+- `RunParallel` 并发的执行 benchmark。`RunParallel` 创建多个 goroutine 然后把 `b.N` 个迭代测试分布到这些 goroutine 上。goroutine 的数目默认是 GOMAXPROCS
 
 ```go
 func BenchmarkParallel(b *testing.B) {
-	templ := template.Must(template.New("test").Parse("Hello, {{.}}!"))
 	b.RunParallel(func(pb *testing.PB) {
-		var buf bytes.Buffer
 		for pb.Next() {
 			// 所有 goroutine 一起，循环一共执行 b.N 次
-			buf.Reset()
-			templ.Execute(&buf, "World")
+            fmt.Sprintf("hello")
 		}
 	})
 }
 ```
+
+**小结**
+
+- 使用 `b.RunParallel` 测试并发性能。
+
+## 注意
+
+测试用例应该互不影响，如果执行某个测试用例后，某个全局变量或者带记忆性的数据结构被修改，执行结束后需要把状态进行恢复，避免影响到其他的测试用例。

@@ -3,6 +3,8 @@
 ## 常用的命令
 
 ```sql
+# 登陆命令
+mysql -h 主机地址 -u 用户名 -p 用户密码
 # 用户名和密码都是 user
 # 登陆
 mysql -u username -p
