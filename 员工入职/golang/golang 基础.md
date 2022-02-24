@@ -37,7 +37,7 @@ ps：修改修改 module 模式。`go env -w GO111MODULE=on`
 
 反射就是程序能够在运行时检查变量和值，求出它们的类型。
 
-reflect.Type 表示 interface{} 的具体类型，而 reflect.Value 表示它的具体值。reflect.TypeOf() 和 reflect.ValueOf() 两个函数可以分别返回 reflect.Type 和 reflect.Value。
+`reflect.Type` 表示 `interface{}` 的具体类型，而 `reflect.Value` 表示它的具体值。`reflect.TypeOf()` 和 `reflect.ValueOf()` 两个函数可以分别返回 `reflect.Type` 和 `reflect.Value`。
 
 例子：
 
@@ -72,9 +72,13 @@ func main() {
 ```
 
 - 其他补充
-  1. reflect.ValueOf(a).Interface() // 取出 a reflect.Value 的值作为 interface{}
-  2. reflect.ValueOf(a).String() // 取出 reflect.Value 的值作为 string
-  3. Value.Elem() // 来获取由原始 reflect.Value 包装的值所指向的值（reflect.Value）。
+  1. `reflect.ValueOf(a).Interface()` // 取出 a reflect.Value 的值作为 interface{}
+  2. `reflect.ValueOf(a).String()` // 取出 reflect.Value 的值作为 string
+  3. `Value.Elem()` // 来获取由原始 reflect.Value 包装的值所指向的值（reflect.Value）。
+
+- 注意
+
+在 **go1.6 版本中反射机制会导出所有方法**（不论首字母是大写还是小写），而在**更高版本中反射机制仅会导出首字母大写的方法**。
 
 ### 网络编程
 
@@ -215,7 +219,10 @@ var _ Person = (*Worker)(nil)
 
 ### import
 
-当导入一个包时，该包下的文件里所有 init() 函数都会被执行，然而，有些时候我们并不需要把整个包都导入进来，仅仅是是希望它执行 init() 函数而已。这个时候就可以使用 import _ 引用该包。即使用 import _ 包路径只是引用该包，仅仅是为了调用 init() 函数，所以无法通过包名来调用包中的其他函数。
+go 语言导包时 `.` 和 `_` 的区别是什么？
+
+- `import _ "fmt"` 当导入一个包时，该包下的文件里所有 `init()` 函数都会被执行，然而，有些时候我们并不需要把整个包都导入进来，仅仅是是希望它执行 `init()` 函数而已。这个时候就可以使用 `import _` 引用该包。
+- `import . "fmt"` 省略前缀的包名，也就是调用的 `fmt.Println("hello world")` 可以省略的写成 `Println("hello world")`。
 
 ### 格式化打印
 
@@ -415,6 +422,46 @@ func myfunc() func() int { // 返注意返回值，这里返回一个函数
 }
 ```
 
+### 指针接收器和值接收器
+
+方法接收者为对象的指针与值有什么区别呢？
+
+如果方法接收者为对象的**指针**，则会修改原对象；如果方法接收者为对象的值，那么在方法中被操作的是原对象的副本，不会影响原对象。
+
+```go
+package main  
+  
+import "fmt"  
+
+type Integer int 
+ 
+// double 乘 2 
+func (p *Integer) double() int {   
+    *p = *p * 2   
+    fmt.Printf("double p = %d\n", *p)  
+    return 0   
+}  
+
+// square 平方  
+func (p Integer) square() int {   
+    p = p * p   
+    fmt.Printf("square p = %d\n", p)  
+    return 0   
+}  
+  
+func main() {
+    var i Integer = 2   
+    i.double()				// receiver 为对象指针，原对象被修改
+    fmt.Println("i = ", i)  
+    
+    i.square()				// receiver 为对象值，原对象不会被修改
+    fmt.Println("i = ", i)  
+}
+
+```
+
+
+
 ## go 工具
 
 ### protoc-gen-go
@@ -518,3 +565,11 @@ includePath": [
 ```
 
 4. 重启 vscode
+
+## go 数据结构
+
+go 标准库中只有数组和 map 这两个数据结构，要用到其他的数据结构就必须引用第三方的库
+
+- set
+
+github.com/deckarep/golang-set
