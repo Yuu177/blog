@@ -95,7 +95,7 @@ ok      tpy/mockProject 0.566s
 
 **小结**
 
-- 注意：只能对接口进行 mock。（后面找资料确认下）
+- 注意：只能对接口进行 mock。
 - 使用 mock 之前，先安装 gmock 库和 mockgen 工具。
 - 使用 mockgen 对接口生成 mock 代码。
 - 打桩被该接口的被调用的方法。

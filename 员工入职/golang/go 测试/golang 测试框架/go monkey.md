@@ -47,7 +47,7 @@ func compute(a, b int) (int, error) {
 func TestCompute(t *testing.T) {
     // 对远程服务器的方法进行打桩
 	patches := gomonkey.ApplyFunc(callRemoteAdd, func(a, b int) (int, error) {
-		return 2, nil
+        return 2, nil
 	})
 	defer patches.Reset()
 

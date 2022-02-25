@@ -531,6 +531,20 @@ func BenchmarkParallel(b *testing.B) {
 
 - 使用 `b.RunParallel` 测试并发性能。
 
+## 可视化测试覆盖率
+
+前面我们说过 go test -cover 可以显示出该测试的函数的覆盖率，但是没有具体的信息。所以这里生成可视化的 html 文件来查看代码的覆盖率情况。
+
+1. 首先生成测试覆盖率的中间文件：covprofile
+
+`go test -coverprofile=covprofile`
+
+2. 再通过中间文件生成 html 文件：coverage.html。
+
+`go tool cover -html=covprofile -o coverage.html`
+
+浏览器打开 html 文件即可。
+
 ## 注意
 
 测试用例应该互不影响，如果执行某个测试用例后，某个全局变量或者带记忆性的数据结构被修改，执行结束后需要把状态进行恢复，避免影响到其他的测试用例。
