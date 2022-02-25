@@ -286,7 +286,7 @@ ok      example 0.006s
 
 **TCP/HTTP**
 
-假设需要测试某个 API 接口的 handler 能够正常工作，例如 `helloHandler`
+假设需要**测试某个 http API 接口**的 handler 能够正常工作，例如 `helloHandler`
 
 ```go
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -369,7 +369,7 @@ func TestConn(t *testing.T) {
 
 **小结**
 
-- 对 http 测试，建议使用 net/http/httptest。
+- 对 http api 接口测试，建议使用 net/http/httptest。
 
 ### 以并行的方式进行测试
 
