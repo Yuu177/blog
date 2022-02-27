@@ -485,7 +485,7 @@ public:
 
 一开始就能想到用前缀和后缀和来做，但是还不是很熟练。写了好一会才做出来。看了别人写的题解后发现好简单，都不用额外开辟空间。
 
-```
+```cpp
 class Solution {
 public:
     vector<int> maxScoreIndices(vector<int>& nums) {
@@ -531,7 +531,7 @@ public:
 
 超时。想复杂了。一开始用滑动窗口，其实这里都不需要。
 
-```
+```cpp
 class Solution {
 public:
     string subStrHash(string s, int power, int modulo, int k, int hashValue) {
@@ -576,7 +576,7 @@ public:
 
 只需要事先把 p 求出来即可。而不是每次都要重新计算 p，没有想到在 for 循环中顺便计算 p 也很耗时。（一直以为只有嵌套循环算法时间复杂度高了才会超时）
 
-```
+```c++
 class Solution {
 public:
     string subStrHash(string s, int power, int modulo, int k, int hashValue) {
@@ -634,4 +634,67 @@ public:
 ### 第 280 场
 
 排名（1488 / 5833）
+
+待补充
+
+### 第 282 场
+
+排名（3998 / 7164）
+
+#### Problem C - 完成旅途的最少时间
+
+题目链接：[完成旅途的最少时间](https://leetcode-cn.com/problems/minimum-time-to-complete-trips/)
+
+开始想到的是暴力，很显然，直接超时了（我们要思考怎么**去减少时间复杂度**，而不是对某些特殊情况做个 if 处理就完事了，这里做题的时候就陷入了这个误区，下次注意）。
+
+暴力不过后，后面想着怎么保存之前计算的状态，没调试出来。
+
+**参考答案**
+
+方法一：二分答案
+经典二分答案题：已知总时间 T，我们可以很容易地求出所有车一共运行了多少次。将这一次数表示为一个 T 的函数 f(T)，显然 f(T) 随 T 的增大单调递增。这一单调性是二分答案的基础。
+
+时间复杂度 O(Nlog C)。其中 C = min(time) * totalTrips 为答案的上界。
+空间复杂度 O(1)。
+
+```c++
+class Solution {
+public:
+    long long minimumTime(vector<int>& time, int totalTrips) {
+        long long start = 1;
+        int minn = getMin(time);
+        long long end = static_cast<long long>(minn) * static_cast<long long>(totalTrips);
+
+        while (start + 1 < end) {
+            long long mid = start + (end - start) / 2;
+            if (check(time, mid, totalTrips)) {
+                end = mid;
+            } else {
+                start = mid;
+            }
+        }
+
+        if (check(time, start, totalTrips)) {
+            return start;
+        }
+        return end;
+    }
+
+    long long getMin(const vector<int>& time) {
+        int minn = INT_MAX;
+        for (auto t : time) {
+            minn = min(minn, t);
+        }
+        return minn;
+    }
+
+    bool check(const vector<int>& time, long long t, long long totalTrips) {
+        long long sum = 0;
+        for (int i = 0; i < time.size(); i++) {
+            sum += t / time[i];
+        }
+        return sum >= totalTrips;
+    }
+};
+```
 
