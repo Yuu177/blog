@@ -217,6 +217,125 @@ var _ Person = (*Worker)(nil)
 
 将空值 nil 转换为 *Student 类型，再转换为 Person 接口，如果转换失败，说明 Student 并没有实现 Person 接口的所有方法。
 
+- 接口的嵌套
+
+尽管 Go 语言没有提供继承机制，但可以通过嵌套其他的接口，创建一个新接口。
+
+```go
+package main
+
+import (  
+    "fmt"
+)
+
+type SalaryCalculator interface {  
+    DisplaySalary()
+}
+
+type LeaveCalculator interface {  
+    CalculateLeavesLeft() int
+}
+
+type EmployeeOperations interface {  
+    SalaryCalculator
+    LeaveCalculator
+}
+
+type Employee struct {  
+    firstName string
+    lastName string
+    basicPay int
+    pf int
+    totalLeaves int
+    leavesTaken int
+}
+
+func (e Employee) DisplaySalary() {  
+    fmt.Printf("%s %s has salary $%d", e.firstName, e.lastName, (e.basicPay + e.pf))
+}
+
+func (e Employee) CalculateLeavesLeft() int {  
+    return e.totalLeaves - e.leavesTaken
+}
+
+func main() {  
+    e := Employee {
+        firstName: "Naveen",
+        lastName: "Ramanathan",
+        basicPay: 5000,
+        pf: 200,
+        totalLeaves: 30,
+        leavesTaken: 5,
+    }
+    var empOp EmployeeOperations = e
+    empOp.DisplaySalary()
+    fmt.Println("\nLeaves left =", empOp.CalculateLeavesLeft())
+}
+```
+
+我们创建了一个新的接口 `EmployeeOperations`，它嵌套了两个接口：`SalaryCalculator` 和 `LeaveCalculator`。
+
+如果一个类型定义了 `SalaryCalculator` 和 `LeaveCalculator` 接口里包含的方法，我们就称该类型实现了 `EmployeeOperations` 接口。
+
+### 结构体
+
+- 结构体嵌套接口
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+type phoner interface {
+	run()
+}
+
+// xiaomi implement phoner
+type xiaomi struct {
+	version int
+	price   int
+}
+
+func (x *xiaomi) run() {
+	fmt.Printf("xiaomi version: %v, price: %v\n", x.version, x.price)
+}
+
+// huawei implement phoner
+type huawei struct {
+}
+
+func (h *huawei) run() {
+	fmt.Printf("huawei...\n")
+}
+
+type student struct {
+	name string
+	p    phoner // student 拥有手机的抽象，具体是什么手机看具体的实现
+}
+
+func (s *student) openPhone() {
+	s.p.run()
+}
+
+func main() {
+	x := &xiaomi{10, 10000}
+	st := student{name: "zhangsan", p: x}
+	st.openPhone()
+
+	h := &huawei{}
+	st2 := student{name: "lisi", p: h}
+	st2.openPhone()
+}
+
+// 输出结果
+// xiaomi version: 10, price: 10000
+// huawei...
+```
+
+**注意**：struct 嵌套 interfece 相当于 struct 拥有这个 interface 的变量。interface 嵌套 interface 类似于继承。
+
 ### import
 
 go 语言导包时 `.` 和 `_` 的区别是什么？
@@ -570,6 +689,31 @@ includePath": [
 
 go 标准库中只有数组和 map 这两个数据结构，要用到其他的数据结构就必须引用第三方的库
 
-- set
+### set
 
-github.com/deckarep/golang-set
+引入包 github.com/deckarep/golang-set
+
+- example
+
+```go
+package main
+
+import (
+	"fmt"
+
+	mapset "github.com/deckarep/golang-set"
+)
+
+func main() {
+	se := mapset.NewSet()
+	se.Add("tpy")
+	se.Add("tpy")
+	fmt.Printf("se.Cardinality(): %v\n", se.Cardinality())
+	fmt.Printf("se.String(): %v\n", se.String())
+}
+
+// 输出
+// se.Cardinality(): 1
+// se.String(): Set{tpy}
+```
+
