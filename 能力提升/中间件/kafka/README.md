@@ -137,7 +137,7 @@ topic 是逻辑队列，partition 是物理队列
 
 假如我的一个 topic 有三个分区，那么生产者生产一条消息后会放到**其中的一个分区**（<u>注意这里不是一条消息存到三个分区中</u>）。
 
-![topci](.resource/topic.png)
+![topic](.resource/topic.png)
 
 ### partition 的有序性
 
