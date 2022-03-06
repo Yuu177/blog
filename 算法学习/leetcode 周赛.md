@@ -607,7 +607,7 @@ public:
 };
 ```
 
-### 第 279 场(待补充)
+### 第 279 场
 
 排名（1958 / 4132）
 
@@ -628,7 +628,90 @@ public:
 
 #### 设计位集
 
-想到之前 csdn 发过的 bitmap 文章，之前没有考虑这么复杂的位集，而且回过头发现之前写的文章的代码还有错误的地方（后续修改）。
+想到之前 csdn 发过的 bitmap 文章，而且回过头发现之前写的文章的代码还有错误的地方（后续修改）。
+
+这道题想复杂了，想用二进制位运算去解，其实不需要。就一个单纯的 int 数组即可。需要注意的是 filp 操作，因为翻转一次时间复杂度是 `O(size)`，其中最多可能有 1e5 次，会超时。所以加入一个标志位，来表示当前的状态是否翻转了。具体需要注意的事项都写在注释里了。
+
+```CPP
+class Bitset {
+private:
+    vector<int> bucket;
+    int cntOne;
+    bool isFlip; // 翻转偶数次，相当于没翻转
+
+public:
+    Bitset(int size) {
+        bucket.resize(size, 0);
+        cntOne = 0;
+        isFlip = false;
+    }
+    
+    void fix(int idx) {
+        if (!isFlip) {
+            if (bucket[idx] == 0) {
+                bucket[idx] = 1;
+                cntOne++;
+            }
+        } else {
+            if (bucket[idx] == 1) {
+                bucket[idx] = 0;
+                cntOne++;
+            }
+        }
+    }
+    
+    void unfix(int idx) {
+        if (!isFlip) {
+            if (bucket[idx] == 1) {
+                bucket[idx] = 0;
+                cntOne--;
+            }
+        } else {
+            if (bucket[idx] == 0) {
+                bucket[idx] = 1;
+                cntOne--;
+            }
+        }
+    }
+    
+    void flip() {
+        isFlip = !isFlip;
+        cntOne = bucket.size() - cntOne; // 注意翻转后需要修改 cntOne
+    }
+    
+    bool all() {
+        return cntOne == bucket.size();
+    }
+    
+    bool one() {
+        return cntOne > 0;
+    }
+    
+    int count() {
+        return cntOne;
+    }
+    
+    string toString() {
+        string res = "";
+        for (int i = 0; i < bucket.size(); i++) {
+            int temp;
+            if (isFlip) {
+                if (bucket[i] == 0) { // 注意这里用一个中间变量去接，而不能在原数组操作
+                    temp = 1;
+                } else {
+                    temp = 0;
+                }
+            } else {
+                temp = bucket[i];
+            }
+
+            res += to_string(temp);
+        }
+
+        return res;
+    }
+};
+```
 
 ### 第 280 场
 
