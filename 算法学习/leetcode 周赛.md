@@ -607,13 +607,16 @@ public:
 };
 ```
 
-### 第 279 场
+### 第 279 场(待补充)
 
 排名（1958 / 4132）
 
-#### Problem B - 重排数字的最小值
+- [x] `3 分` - [对奇偶下标分别排序](https://leetcode-cn.com/problems/sort-even-and-odd-indices-independently/)
+- [x] `4 分` - [重排数字的最小值](https://leetcode-cn.com/problems/smallest-value-of-the-rearranged-number/)
+- [ ] `5 分` - [设计位集](https://leetcode-cn.com/problems/design-bitset/)
+- [ ] `6 分` - [移除所有载有违禁货物车厢所需的最少时间](https://leetcode-cn.com/problems/minimum-time-to-remove-all-cars-containing-illegal-goods/)
 
-题目链接：[重排数字的最小值](https://leetcode-cn.com/problems/smallest-value-of-the-rearranged-number/)
+#### 重排数字的最小值
 
 方法一：贪心
 
@@ -623,11 +626,7 @@ public:
 
 自己写的方法是把大数转换成数组后在排序。忽略了 string 也可以排序数字大小。导致了很多多余的操作（虽然代码思路都差不多）。
 
-#### Problem C - 设计位集
-
-状态：no pass
-
-题目链接：[设计位集](https://leetcode-cn.com/problems/design-bitset/)
+#### 设计位集
 
 想到之前 csdn 发过的 bitmap 文章，之前没有考虑这么复杂的位集，而且回过头发现之前写的文章的代码还有错误的地方（后续修改）。
 
@@ -635,15 +634,21 @@ public:
 
 排名（1488 / 5833）
 
-待补充
+- [x] `3 分` - [得到 0 的操作数](https://leetcode-cn.com/problems/count-operations-to-obtain-zero/)
+- [x] `4 分` - [使数组变成交替数组的最少操作数](https://leetcode-cn.com/problems/minimum-operations-to-make-the-array-alternating/)
+- [x] `5 分` - [拿出最少数目的魔法豆](https://leetcode-cn.com/problems/removing-minimum-number-of-magic-beans/)
+- [ ] `6 分` - [数组的最大与和](https://leetcode-cn.com/problems/maximum-and-sum-of-array/)
 
 ### 第 282 场
 
 排名（3998 / 7164）
 
-#### Problem C - 完成旅途的最少时间
+- [x] `3 分` - [统计包含给定前缀的字符串](https://leetcode-cn.com/problems/counting-words-with-a-given-prefix/)
+- [x] `4 分` - [使两字符串互为字母异位词的最少步骤数](https://leetcode-cn.com/problems/minimum-number-of-steps-to-make-two-strings-anagram-ii/)
+- [ ] `5 分` - [完成旅途的最少时间](https://leetcode-cn.com/problems/minimum-time-to-complete-trips/)
+- [ ] `6 分` - [完成比赛的最少时间](https://leetcode-cn.com/problems/minimum-time-to-finish-the-race/)
 
-题目链接：[完成旅途的最少时间](https://leetcode-cn.com/problems/minimum-time-to-complete-trips/)
+#### 完成旅途的最少时间
 
 开始想到的是暴力，很显然，直接超时了（我们要思考怎么**去减少时间复杂度**，而不是对某些特殊情况做个 if 处理就完事了，这里做题的时候就陷入了这个误区，下次注意）。
 
@@ -694,6 +699,85 @@ public:
             sum += t / time[i];
         }
         return sum >= totalTrips;
+    }
+};
+```
+
+### 第 283 场
+
+排名（4918 / 7817）
+
+- [x] `3 分` - [Excel 表中某个范围内的单元格](https://leetcode-cn.com/problems/cells-in-a-range-on-an-excel-sheet/)
+- [ ] `4 分` - [向数组中追加 K 个整数](https://leetcode-cn.com/problems/append-k-integers-with-minimal-sum/)
+- [ ] `4 分` - [根据描述创建二叉树](https://leetcode-cn.com/problems/create-binary-tree-from-descriptions/)
+- [ ] `6 分` - [替换数组中的非互质数](https://leetcode-cn.com/problems/replace-non-coprime-numbers-in-array/)
+
+卡在第二题了，第三题其实很容易，但是没有做。所以比赛时候，被卡住了可以看看后面的题目。
+
+#### 向数组中追加 K 个整数
+
+第二题怎么说呢，看了答案后很简单，之前在做题的，没有想到等差数列求和。就暴力加。而且没加明白，导致超时。
+
+- 暴力超时
+
+```cpp
+class Solution {
+public:
+    long long minimalKSum(vector<int>& nums, int k) {
+        unordered_set<int> bucket;
+        for (auto it : nums) {
+            bucket.insert(it);
+        }
+
+        long long ans = 0;
+
+        int start = 1;
+        int end =  1000000000;
+        for (int i = start; i <= end; i++) {
+            if (k == 0) {
+                break;
+            }
+            if (bucket.find(i) == bucket.end()) { // no found
+                ans += i;
+                k--;
+            }
+        }
+        
+        return ans;
+    }
+};
+```
+
+- 贪心
+
+等差数列求和
+
+```cpp
+class Solution {
+public:
+    long long minimalKSum(vector<int>& nums, int k) {
+        nums.push_back(0);
+        nums.push_back(2e9);
+        sort(nums.begin(), nums.end()); // 加入哨兵后排序
+
+        long long ans = 0;
+        for (int i = 1; i < nums.size(); i++) {
+            long long len = nums[i] - nums[i-1] - 1; // 可以填充的数字个数
+            if (len <= 0) {
+                continue;
+            }
+
+            if (len >= k) {
+                 // 等差数列求和。这里需要注意乘积是 k，而不是 len
+                ans += ((long long)(nums[i-1]+1) + (long long)(nums[i-1]+k)) * k / 2;
+                break;
+            }
+
+            ans += ((long long)nums[i-1] + (long long)nums[i]) * len / 2;
+            k -= len;
+        }
+
+        return ans;
     }
 };
 ```
