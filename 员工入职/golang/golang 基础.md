@@ -675,6 +675,10 @@ go run -gcflags "-m -l" main.go
 
 [Go语言变量逃逸分析](https://www.kancloud.cn/imdszxs/golang/1509511)
 
+### context
+
+用来解决 goroutine 之间`退出通知`、`元数据传递`的功能。在一组 goroutine 之间传递共享的值、取消信号、deadline 等。
+
 ## go 工具
 
 ### protoc-gen-go
@@ -781,7 +785,50 @@ includePath": [
 
 ## go 数据结构
 
-go 标准库中只有数组和 map 这两个数据结构，要用到其他的数据结构就必须引用第三方的库
+go 标准库中只有数组和 map 这两个数据结构，要用到其他的数据结构就必须引用第三方的库。
+
+### slice
+
+- 定义
+
+```go
+type slice struct {
+    array unsafe.Pointer // 元素指针
+    len   int // 长度 
+    cap   int // 容量
+}
+```
+
+- append 操作的误区
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func myAppend(arr []int) {
+	fmt.Printf("myAppend arr: %p\n", arr)
+	arr = append(arr, 77)
+	fmt.Printf("myAppend: %p, %v\n", arr, arr)
+}
+
+func main() {
+	arr := []int{1, 3, 100, 2, 20}
+	myAppend(arr)
+	fmt.Printf("arr: %p, %v\n", arr, arr)
+}
+
+// 输出结果
+// myAppend arr: 0xc000016120
+// myAppend: 0xc00001c050, [1 3 100 2 20 77]
+// arr: 0xc000016120, [1 3 100 2 20]
+```
+
+为啥外面的 arr 的值没有改变呢？明明是把指针传入进去了。我们从打印的地址确实可以看到 外面的 arr 和传入的 arr 的地址是一样的。但是执行 `append` 之后的 arr 的地址却改变了。原因是 append 操作虽然底层的数组是改变了，但是引用该数组的 slice 并没有改变。如下图所示：
+
+![append](.resource/sliceAppend.png)
 
 ### set
 
