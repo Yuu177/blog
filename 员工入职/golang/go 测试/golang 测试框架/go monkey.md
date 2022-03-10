@@ -78,9 +78,10 @@ func (c *computer) compute(a, b int) (int, error) {
 func TestComputeMethod(t *testing.T) {
 	var c *computer
 	// 因为用到反射，所以被打桩的方法名必须为公有的（即首字母大写）
-	gomonkey.ApplyMethod(reflect.TypeOf(c), "CallRemoteAdd", func(_ *computer, a, b int) (int, error) {
+	patches :=gomonkey.ApplyMethod(reflect.TypeOf(c), "CallRemoteAdd", func(_ *computer, a, b int) (int, error) {
 		return 2, nil
 	})
+	defer patches.Reset()
 
 	sum, err := c.compute(1, 1)
 	if sum != 2 || err != nil {

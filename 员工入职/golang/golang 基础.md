@@ -679,6 +679,74 @@ go run -gcflags "-m -l" main.go
 
 用来解决 goroutine 之间`退出通知`、`元数据传递`的功能。在一组 goroutine 之间传递共享的值、取消信号、deadline 等。
 
+## defer 的坑
+
+语句 `defer` 向当前的函数注册稍后执行的函数调用。直到当前函数执行结束前才被执行(如 return 和 panic)。
+
+> 注意：延迟调用可修改当前函数命名返回值
+
+- 示例代码
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func test() int {
+	a := 100
+	defer func() {
+		a += 100
+	}()
+
+	return a
+}
+
+func test1() (z int) {
+	z = 100
+	defer func() {
+		fmt.Printf("defer: %v\n", z)
+		z += 100
+	}()
+
+	return
+}
+
+func test2() *int {
+	z := 100
+	defer func() {
+		z += 100
+	}()
+
+	return &z
+}
+
+func main() {
+	b := test()
+	fmt.Printf("b: %v\n", b)
+
+	c := test1()
+	fmt.Printf("c: %v\n", c)
+
+	d := test2()
+	fmt.Printf("d: %v\n", *d)
+}
+
+// 输出结果
+// b: 100
+// defer: 100
+// c: 200
+// d: 200
+```
+
+- `return` 并不是 `ret` 汇编，它会先更新返回值，然后执行 `defer`，然后走到 `}` 才是 `ret` ，这个才是函数结束从栈弹出返回的标志。
+
+- 匿名返回值，返回值是在 `return` 执行时声明的，`defer` 无法访问，等价于 `return` 了一个 `z` 的值拷贝，`defer` 修改 `z` 不影响返回值。命名返回值 `defer` 可以直接访问修改。
+- 如果匿名返回值是指针，那就会影响返回值。
+
+总结：最好是用命名返回值（golang 源码也是这样子写的），省去琢磨 defer 后返回的结果。特别是有些缓冲区需要 close 才算 terminating boundary。使用 defer close 很有可能返回值会 missing the terminating boundary。（今天写测试用例就遇到了这个问题，网上查了好久。以为是代码写错了，原来是 defer 的坑）
+
 ## go 工具
 
 ### protoc-gen-go

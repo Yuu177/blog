@@ -58,7 +58,7 @@ import (
 func TestGetFromDB(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	db := NewMockDB(ctrl)
+	m := NewMockDB(ctrl)
 	// 打桩 DB 的 Get 方法
 	m.EXPECT().Get(gomock.Eq("Tom")).Return(100, errors.New("not exist")) //当入参为 tom，返回值为 100, error("not exist")
 
