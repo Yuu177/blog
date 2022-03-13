@@ -165,7 +165,7 @@ func TestGetFromDB(t *testing.T) {
 }
 ```
 
-- `Times()` 断言 Mock 方法被调用的次数。
+- `Times()` 断言 Mock 方法被调用的次数（默认是一次）。
 - `MaxTimes()` 最大次数。
 - `MinTimes()` 最小次数。
 - `AnyTimes()` 任意次数（包括 0 次）。
