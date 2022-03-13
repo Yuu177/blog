@@ -455,7 +455,7 @@ public:
 
 ~~后续补充，今晚晚了，明天还要工作~~
 
-### 第 277 场
+### 第 277 场(待补充)
 
 排名（1784 / 5059）
 
@@ -471,9 +471,12 @@ public:
 
 排名（2290 / 4643）
 
-#### Problem B - 分组得分最高的所有下标
+- [x] `3 分` - [将找到的值乘以 2](https://leetcode-cn.com/problems/keep-multiplying-found-values-by-two/)
+- [x] `4 分` - [分组得分最高的所有下标](https://leetcode-cn.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/)
+- [ ] `5 分` - [查找给定哈希值的子串](https://leetcode-cn.com/problems/find-substring-with-given-hash-value/)
+- [ ] `6 分` - [字符串分组](https://leetcode-cn.com/problems/groups-of-strings/)
 
-题目链接：[分组得分最高的所有下标](https://leetcode-cn.com/problems/all-divisions-with-the-highest-score-of-a-binary-array/)
+#### 分组得分最高的所有下标
 
 方法一：前缀和
 
@@ -525,11 +528,11 @@ public:
 
 ```
 
-#### Problem C - 查找给定哈希值的子串
-
-题目链接：[查找给定哈希值的子串](https://leetcode-cn.com/problems/find-substring-with-given-hash-value/)
+#### 查找给定哈希值的子串
 
 超时。想复杂了。一开始用滑动窗口，其实这里都不需要。
+
+- 滑动窗口
 
 ```cpp
 class Solution {
@@ -573,6 +576,8 @@ public:
     }
 };
 ```
+
+- for 循环就完事了
 
 只需要事先把 p 求出来即可。而不是每次都要重新计算 p，没有想到在 for 循环中顺便计算 p 也很耗时。（一直以为只有嵌套循环算法时间复杂度高了才会超时）
 
@@ -865,3 +870,30 @@ public:
 };
 ```
 
+### 第 284 场
+
+排名（4086 / 8483）
+
+- [x] `3 分` - [找出数组中的所有 K 近邻下标](https://leetcode-cn.com/problems/find-all-k-distant-indices-in-an-array/)
+- [x] `4 分` - [统计可以提取的工件](https://leetcode-cn.com/problems/count-artifacts-that-can-be-extracted/)
+- [ ] `5 分` - [K 次操作后最大化顶端元素](https://leetcode-cn.com/problems/maximize-the-topmost-element-after-k-moves/)
+- [ ] `6 分` - [得到要求路径的最小带权子图](https://leetcode-cn.com/problems/minimum-weighted-subgraph-with-the-required-paths/)
+
+这周周赛前三题还是挺简单，第四题还是没看。第三道一直在修改测试用例，差几个用例过不了。当时做题的时候没有好好分清楚情况就开始动手了。分类讨论情况比较多的题目还是得需要在纸上分好情况再动手。
+
+####  K 次操作后最大化顶端元素
+
+- k=0：直接输出 nums[0]；
+
+- n = 1：若 kk 为奇数则输出 -1，否则输出 nums[0]；
+
+- 1≤ k ≤n：有两种小情况，取其中的最大值即可。
+  - 可以首先将栈顶的 (k−1) 个元素弹出，最后一步操作加入这些元素中的最大值；
+  - 可以将栈顶的 k 个元素弹出，露出 nums[k]。
+
+- k > n：一定能取到所有数中的最大值。
+
+  首先将所有数弹出，然后还剩 (k - n) 步操作，分析如下。
+
+  - 若 (k - n) 是奇数，则反复将最大值加入弹出栈即可。
+  - 若 (k - n) 是偶数，先将一个非最大值加入栈，然后反复将最大值加入弹出栈即可。
