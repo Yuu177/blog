@@ -109,6 +109,14 @@ ps：强制推送本地分支覆盖掉远程分支。只适合自己 create 的�
 
 `git rebase master`
 
+## 本地分支对应多个不同仓库的远程分支
+
+假设本地分支 main。对应有 gitlab 的仓库 gitlab/main 和 github 的仓库 github/main。我们如何设置默认 git pull 或者 git push 默认操作的远程仓库？
+
+--set-upstream 为 git pull/fetch 设置上游（--set-upstream 远程仓库名 远程分支名）
+
+`git pull --set-upstream origin main`
+
 ## git 问题
 
 - git status 乱码
