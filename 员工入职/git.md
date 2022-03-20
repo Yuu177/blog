@@ -123,3 +123,14 @@ ps：强制推送本地分支覆盖掉远程分支。只适合自己 create 的�
 
 参考链接：https://blog.csdn.net/u012145252/article/details/81775362
 
+- git pull 的时候出现错误
+
+> kex_exchange_identification: read: Connection reset by peer
+> fatal: Could not read from remote repository.
+>
+> Please make sure you have the correct access rights
+> and the repository exists.
+
+设置一下 git config http.sslVerify "false"
+
+参考链接：https://stackoverflow.com/questions/54611871/ssh-exchange-identification-read-connection-reset-by-peer-error-when-trying
