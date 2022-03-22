@@ -897,3 +897,14 @@ public:
 
   - 若 (k - n) 是奇数，则反复将最大值加入弹出栈即可。
   - 若 (k - n) 是偶数，先将一个非最大值加入栈，然后反复将最大值加入弹出栈即可。
+
+### 第 285 场
+
+排名（3081 / 7501）
+
+- [x] `3 分` - [统计数组中峰和谷的数量](https://leetcode-cn.com/problems/count-hills-and-valleys-in-an-array/)
+- [x] `4 分` - [统计道路上的碰撞次数](https://leetcode-cn.com/problems/count-collisions-on-a-road/)
+- [ ] `5 分` - [射箭比赛中的最大得分](https://leetcode-cn.com/problems/maximum-points-in-an-archery-competition/)
+- [ ] `6 分` - [由单个字符重复的最长子字符串](https://leetcode-cn.com/problems/longest-substring-of-one-repeating-character/)
+
+一二题做出来了，但是花较久的时间，第三题看着完全没有头绪，后面看解答还是通过枚举法来解决（枚举法已经出现过好多次了，这个得练习一下才行）。第四题用暴力法去解，当然肯定超时，现阶段第四题还是不要想了，先把前三道做了先吧。
