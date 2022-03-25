@@ -1,10 +1,12 @@
 [TOC]
 
-## 学习内容
+# golang 基础
+
+## 学习路线
 
 ![学习思维导图](.resource/golang 基础学习.jpeg)
 
-## 名词解释
+## go 环境相关
 
 ### GOPATH 和 GOROOT
 不同于其他语言，go 中没有项目的说法，只有包, 其中有两个重要的路径，GOROOT 和 GOPATH
@@ -26,6 +28,14 @@ Go 开发相关的环境变量如下：
   - 2、当前文件在包含 go.mod 文件的目录下面。
 
 ps：修改修改 module 模式。`go env -w GO111MODULE=on`
+
+### go.mod 下使用 vendor
+
+选项 -mod=vendor
+
+go run -mod=vendor mian.go 
+
+ps：需要开启 mod(GO111MODULE = on) 才能用 -mod=vendor
 
 ### go 命令
 
