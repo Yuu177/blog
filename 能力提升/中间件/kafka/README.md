@@ -1,5 +1,35 @@
 [TOC]
 
+# kafka
+
+## kafka 介绍
+
+- kafka 架构图
+
+![kafak](.resource/kafka 架构图.png)
+
+## Kafka 所使用的基本术语
+
+- Topic
+
+Kafka 将消息分门别类，每一类的消息称之为一个主题（Topic）。
+
+- Producer
+
+发布消息的对象称之为主题生产者（Kafka topic producer）
+
+- Consumer
+
+订阅消息并处理发布的消息的对象称之为主题消费者（consumers）
+
+- Broker
+
+已发布的消息保存在一组服务器中，称之为 Kafka 集群。集群中的每一个 kafka 服务器都是一个 Broker。 消费者可以订阅一个或多个主题（topic），并从 Broker 拉数据，从而消费这些已发布的消息。
+
+- Zookeeper
+
+为集群分布式一致性提供服务，以及在早期 kafka版本保存消息相关元数据。
+
 ## mac os 安装
 
 **安装**
