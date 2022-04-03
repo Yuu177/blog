@@ -1,10 +1,10 @@
 [TOC]
 
-## leetcode 周赛
+# leetcode 周赛
 
-### 第 274 场
+## 第 274 场
 
-#### Problem D - 相同元素间隔之和
+### Problem D - 相同元素间隔之和
 
 题目链接：[相同元素的间隔之和](https://leetcode-cn.com/problems/intervals-between-identical-elements/)
 
@@ -66,9 +66,9 @@ public:
 };
 ```
 
-### 第 275 场
+## 第 275 场
 
-#### Problem B - 最少交换次数来组合所有的 1 II
+### Problem B - 最少交换次数来组合所有的 1 II
 
 题目链接：[最少交换次数来组合所有的 1 II](https://leetcode-cn.com/problems/minimum-swaps-to-group-all-1s-together-ii/)
 
@@ -138,7 +138,7 @@ public:
 };
 ```
 
-####  Problem C - 统计追加字母可以获得的单词数
+###  Problem C - 统计追加字母可以获得的单词数
 
 题目链接：[统计追加字母可以获得的单词数](https://leetcode-cn.com/problems/count-words-obtained-after-adding-a-letter/)
 
@@ -251,7 +251,7 @@ public:
 };
 ```
 
-#### Problem D - 全部开花的最早一天
+### Problem D - 全部开花的最早一天
 
 题目链接：[全部开花的最早一天](https://leetcode-cn.com/problems/earliest-possible-day-of-full-bloom/)
 
@@ -324,11 +324,11 @@ public:
 };
 ```
 
-### 第 276 场
+## 第 276 场
 
 排名（1832 / 5243）
 
-#### Problem C - 解决智力问题
+### Problem C - 解决智力问题
 
 题目链接：[解决智力问题](https://leetcode-cn.com/problems/solving-questions-with-brainpower/)
 
@@ -441,7 +441,7 @@ public:
 
 这种其实很容易想到动态规划，状态方程其实后面发现也很容易写出来。但是之前做的都是正向 dp，这种反向 dp 还是第一次见。还有就是拆成子问题，从下往上这种思维还是有所欠缺。
 
-#### Problem D - 同时运行 N 台电脑的最长时间
+### Problem D - 同时运行 N 台电脑的最长时间
 
 状态：no pass
 
@@ -455,19 +455,19 @@ public:
 
 ~~后续补充，今晚晚了，明天还要工作~~
 
-### 第 277 场(待补充)
+## 第 277 场(待补充)
 
 排名（1784 / 5059）
 
 这周的周赛前三道相对于来说比较简单。第四题没有做出来。
 
-#### Problem D -  基于陈述统计最多好人数
+### Problem D -  基于陈述统计最多好人数
 
 题目链接：[基于陈述统计最多好人数](https://leetcode-cn.com/problems/maximum-good-people-based-on-statements/)
 
 完全没有头绪（后续补充）
 
-### 第 278 场
+## 第 278 场
 
 排名（2290 / 4643）
 
@@ -476,7 +476,7 @@ public:
 - [ ] `5 分` - [查找给定哈希值的子串](https://leetcode-cn.com/problems/find-substring-with-given-hash-value/)
 - [ ] `6 分` - [字符串分组](https://leetcode-cn.com/problems/groups-of-strings/)
 
-#### 分组得分最高的所有下标
+### 分组得分最高的所有下标
 
 方法一：前缀和
 
@@ -528,7 +528,7 @@ public:
 
 ```
 
-#### 查找给定哈希值的子串
+### 查找给定哈希值的子串
 
 超时。想复杂了。一开始用滑动窗口，其实这里都不需要。
 
@@ -612,7 +612,7 @@ public:
 };
 ```
 
-### 第 279 场
+## 第 279 场
 
 排名（1958 / 4132）
 
@@ -621,7 +621,7 @@ public:
 - [ ] `5 分` - [设计位集](https://leetcode-cn.com/problems/design-bitset/)
 - [ ] `6 分` - [移除所有载有违禁货物车厢所需的最少时间](https://leetcode-cn.com/problems/minimum-time-to-remove-all-cars-containing-illegal-goods/)
 
-#### 重排数字的最小值
+### 重排数字的最小值
 
 方法一：贪心
 
@@ -631,7 +631,7 @@ public:
 
 自己写的方法是把大数转换成数组后在排序。忽略了 string 也可以排序数字大小。导致了很多多余的操作（虽然代码思路都差不多）。
 
-#### 设计位集
+### 设计位集
 
 想到之前 csdn 发过的 bitmap 文章，而且回过头发现之前写的文章的代码还有错误的地方（后续修改）。
 
@@ -718,7 +718,7 @@ public:
 };
 ```
 
-### 第 280 场
+## 第 280 场
 
 排名（1488 / 5833）
 
@@ -727,7 +727,7 @@ public:
 - [x] `5 分` - [拿出最少数目的魔法豆](https://leetcode-cn.com/problems/removing-minimum-number-of-magic-beans/)
 - [ ] `6 分` - [数组的最大与和](https://leetcode-cn.com/problems/maximum-and-sum-of-array/)
 
-### 第 282 场
+## 第 282 场
 
 排名（3998 / 7164）
 
@@ -736,7 +736,7 @@ public:
 - [ ] `5 分` - [完成旅途的最少时间](https://leetcode-cn.com/problems/minimum-time-to-complete-trips/)
 - [ ] `6 分` - [完成比赛的最少时间](https://leetcode-cn.com/problems/minimum-time-to-finish-the-race/)
 
-#### 完成旅途的最少时间
+### 完成旅途的最少时间
 
 开始想到的是暴力，很显然，直接超时了（我们要思考怎么**去减少时间复杂度**，而不是对某些特殊情况做个 if 处理就完事了，这里做题的时候就陷入了这个误区，下次注意）。
 
@@ -791,7 +791,7 @@ public:
 };
 ```
 
-### 第 283 场
+## 第 283 场
 
 排名（4918 / 7817）
 
@@ -802,7 +802,7 @@ public:
 
 卡在第二题了，第三题其实很容易，但是没有做。所以比赛时候，被卡住了可以看看后面的题目。
 
-#### 向数组中追加 K 个整数
+### 向数组中追加 K 个整数
 
 第二题怎么说呢，看了答案后很简单，之前在做题的，没有想到等差数列求和。就暴力加。而且没加明白，导致超时。
 
@@ -870,7 +870,7 @@ public:
 };
 ```
 
-### 第 284 场
+## 第 284 场
 
 排名（4086 / 8483）
 
@@ -881,7 +881,7 @@ public:
 
 这周周赛前三题还是挺简单，第四题还是没看。第三道一直在修改测试用例，差几个用例过不了。当时做题的时候没有好好分清楚情况就开始动手了。分类讨论情况比较多的题目还是得需要在纸上分好情况再动手。
 
-####  K 次操作后最大化顶端元素
+###  K 次操作后最大化顶端元素
 
 - k=0：直接输出 nums[0]；
 
@@ -898,7 +898,7 @@ public:
   - 若 (k - n) 是奇数，则反复将最大值加入弹出栈即可。
   - 若 (k - n) 是偶数，先将一个非最大值加入栈，然后反复将最大值加入弹出栈即可。
 
-### 第 285 场
+## 第 285 场
 
 排名（3081 / 7501）
 
@@ -908,3 +908,126 @@ public:
 - [ ] `6 分` - [由单个字符重复的最长子字符串](https://leetcode-cn.com/problems/longest-substring-of-one-repeating-character/)
 
 一二题做出来了，但是花较久的时间，第三题看着完全没有头绪，后面看解答还是通过枚举法来解决（枚举法已经出现过好多次了，这个得练习一下才行）。第四题用暴力法去解，当然肯定超时，现阶段第四题还是不要想了，先把前三道做了先吧。
+
+## 第 286 场
+
+排名（3629 / 7248）
+
+- [x] `3 分` - [找出两数组的不同](https://leetcode-cn.com/problems/find-the-difference-of-two-arrays/)
+- [x] `4 分` - [美化数组的最少删除数](https://leetcode-cn.com/problems/minimum-deletions-to-make-array-beautiful/)
+- [ ] `5 分` - [找到指定长度的回文数](https://leetcode-cn.com/problems/find-palindrome-with-fixed-length/)
+- [ ] `6 分` - [从栈中取出 K 个硬币的最大面值和](https://leetcode-cn.com/problems/maximum-value-of-k-coins-from-piles/)
+
+第三题没有头绪，第四题没看
+
+## 第 287 场
+
+排名（3588 / 6811）
+
+- [x] `3 分` - [转化时间需要的最少操作数](https://leetcode-cn.com/problems/minimum-number-of-operations-to-convert-time/)
+- [x] `4 分` - [找出输掉零场或一场比赛的玩家](https://leetcode-cn.com/problems/find-players-with-zero-or-one-losses/)
+- [ ] `5 分` - [每个小孩最多能分到多少糖果](https://leetcode-cn.com/problems/maximum-candies-allocated-to-k-children/)
+- [ ] `6 分` - [加密解密字符串](https://leetcode-cn.com/problems/encrypt-and-decrypt-strings/)
+
+### 每个小孩最多能分到多少糖果
+
+这道题没啥思路写的时候。看了答案后发现用二分还是挺简单的，目前来说二分的题目想不到用二分法，导致卡死了。
+
+ 一般 1e7 规模的数就不能考虑 O(n<sup>2</sup>) 的解决思路了，所以只能找找缩小时间复杂度的其他方法，一般二分的时间复杂度是 O(logN) 所以我们可以先尝试找找本题的二段性在哪里。
+
+**二分的本质不是单调性，而是二段性，能否找到某种性质将数段一分为二。**
+
+下次看到求最大最小要考虑下二分法。
+
+- 二分法
+
+```cpp
+class Solution {
+public:
+    int maximumCandies(vector<int>& candies, long long k) {
+        long long sum = accumulate(candies.begin(), candies.end(), (long long)0);
+        if (sum < k) {
+            return 0;
+        }
+
+        long long left = 1;
+        long long right = sum;
+        long long ans = 0;
+
+        while (left + 1 < right) {
+            long long mid = (left + right) / 2;
+            if (check(candies, mid, k)) {
+                ans = mid;
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        if (check(candies, left, k)){
+            ans = max(ans, left);
+        }
+
+        if (check(candies, right, k)) {
+            ans = max(ans, right);
+        }
+
+        return (int)ans;
+    }
+	
+    // check 一开始入参 k 类型是 int，传入的参数是 long long 会被截断，调试了很久的，没注意到截断，坑死了。
+    bool check(const vector<int>& candies, long long limit, long long k) {
+        for (auto val : candies) {
+            if (val < limit) {
+                continue;
+            } else {
+                k -= val / limit;
+            }
+        }
+        return k <= 0;
+    }
+};
+```
+
+### 加密解密字符串
+
+第四题好简单，有时候我们解题的时候不要只用正向思维去思考问题，比如这道：
+
+- 正向思维：就是我先求出解密后的字符串，然后再去结果 dictionary 中查询有多少种情况符合要求。
+- 逆向思维：s 解密后能变成 dictionary 里几种数，其实反过来就是说 dictionary 里有几种数加密后能变成 s。因此一开始预处理 dictionary 里所有数加密后的结果，decrypt 函数直接查表输出即可。
+
+代码
+
+```cpp
+class Encrypter {
+private:
+    unordered_map<char, string> mHash;
+    unordered_map<string, int> cntHash;
+
+public:
+    Encrypter(vector<char>& keys, vector<string>& values, vector<string>& dictionary) {
+        for (int i = 0; i < keys.size(); i++) {
+            mHash[keys[i]] = values[i];
+        }
+
+        for (auto word : dictionary) {
+            string temp = encrypt(word);
+            cntHash[temp]++;
+        }
+    }
+
+    string encrypt(string word1) {
+        string ans = "";
+        for (int i = 0; i < word1.size(); i++) {
+            ans += mHash[word1[i]];
+        }
+        return ans;
+    }
+
+    int decrypt(string word2) {
+        return cntHash[word2];
+    }
+
+};
+```
+
