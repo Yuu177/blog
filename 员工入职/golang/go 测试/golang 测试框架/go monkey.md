@@ -8,7 +8,7 @@
 
 ~~`github.com/agiledragon/gomonkey`~~ 旧版本不再建议使用，因为不支持 private 方法打桩。
 
-`github.com/agiledragon/gomonkey/v2` 新版本新增(v2.3.0) support a patch for a private member method。使用 `ApplyPrivateMethod`。
+`github.com/agiledragon/gomonkey/v2` 新版本 support a patch for a private member method。使用 `ApplyPrivateMethod`。
 
 我这里使用的版本是 `github.com/agiledragon/gomonkey/v2 v2.7.0`
 
@@ -158,7 +158,7 @@ getRandomString(): 789
 --- PASS: TestGetRandomString (0.00s)
 ```
 
-### ~~注意事项~~ v2.3.0 已经支持打桩 private 方法
+### ~~注意事项~~ 新版本已经支持打桩 private 方法
 
 ~~Monkey 框架的实现中大量使用了反射机制，但是，go1.6 版本和更高版本（比如go1.7）的反射机制有些差异：~~
 
@@ -171,3 +171,4 @@ getRandomString(): 789
 - https://www.cnblogs.com/lanyangsh/p/14587921.html
 
 - https://pkg.go.dev/github.com/agiledragon/gomonkey/v2@v2.7.0#section-readme
+- https://www.jianshu.com/p/7546e788613b
