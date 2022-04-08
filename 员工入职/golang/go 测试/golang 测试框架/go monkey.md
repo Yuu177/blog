@@ -6,7 +6,11 @@
 
 - 安装库
 
-`github.com/agiledragon/gomonkey`
+~~`github.com/agiledragon/gomonkey`~~ 旧版本不再建议使用，因为不支持 private 方法打桩。
+
+`github.com/agiledragon/gomonkey/v2` 新版本新增(v2.3.0) support a patch for a private member method。使用 `ApplyPrivateMethod`。
+
+我这里使用的版本是 `github.com/agiledragon/gomonkey/v2 v2.7.0`
 
 - Test Method
 
@@ -29,7 +33,7 @@ package main
 import (
 	"testing"
 
-	"github.com/agiledragon/gomonkey"
+	"github.com/agiledragon/gomonkey/v2"
 )
 
 // 远程服务器方法
@@ -77,7 +81,6 @@ func (c *computer) compute(a, b int) (int, error) {
 
 func TestComputeMethod(t *testing.T) {
 	var c *computer
-	// 因为用到反射，所以被打桩的方法名必须为公有的（即首字母大写）
 	patches :=gomonkey.ApplyMethod(reflect.TypeOf(c), "CallRemoteAdd", func(_ *computer, a, b int) (int, error) {
 		return 2, nil
 	})
@@ -89,6 +92,8 @@ func TestComputeMethod(t *testing.T) {
 	}
 }
 ```
+
+- 打桩 private 方法: `ApplyPrivateMethod`
 
 ### mock 全局变量
 
@@ -153,14 +158,16 @@ getRandomString(): 789
 --- PASS: TestGetRandomString (0.00s)
 ```
 
-### 注意事项
+### ~~注意事项~~ v2.3.0 已经支持打桩 private 方法
 
-Monkey 框架的实现中大量使用了反射机制，但是，go1.6 版本和更高版本（比如go1.7）的反射机制有些差异：
+~~Monkey 框架的实现中大量使用了反射机制，但是，go1.6 版本和更高版本（比如go1.7）的反射机制有些差异：~~
 
-> 在 **go1.6 版本中反射机制会导出所有方法**（不论首字母是大写还是小写），而在**更高版本中反射机制仅会导出首字母大写的方法**。
+> ~~在 **go1.6 版本中反射机制会导出所有方法**（不论首字母是大写还是小写），而在**更高版本中反射机制仅会导出首字母大写的方法**。~~
 
-反射机制的这种差异导致了 Monkey 框架的第二个缺陷：在 go1.6 版本中可以成功打桩的首字母小写的方法，当 go 版本升级后 Monkey 框架会显式触发 panic。
+~~反射机制的这种差异导致了 Monkey 框架的第二个缺陷：在 go1.6 版本中可以成功打桩的首字母小写的方法，当 go 版本升级后 Monkey 框架会显式触发 panic。~~
 
 ## 参考链接
 
-https://www.cnblogs.com/lanyangsh/p/14587921.html
+- https://www.cnblogs.com/lanyangsh/p/14587921.html
+
+- https://pkg.go.dev/github.com/agiledragon/gomonkey/v2@v2.7.0#section-readme

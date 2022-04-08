@@ -216,5 +216,11 @@ func GetFromDB(key string) int {
 
 对 DB 接口的 mock 并不能作用于 `GetFromDB()` 内部，这样写是没办法进行测试的。那如果将接口 db DB 通过参数传递到 `GetFromDB()`，那么就可以轻而易举地传入 Mock 对象了。
 
+## mock 错误分享
+
+- controller.go:137: aborting test due to **missing call**
+
+报错原因是打桩后的函数没有被调用。建议在打桩函数后面加上 AnyTimes()。
+
 ## 参考链接
 
