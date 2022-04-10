@@ -1031,3 +1031,50 @@ public:
 };
 ```
 
+## 第 288 场
+
+排名(3435 / 6926)
+
+- [x] `3 分` - [按奇偶性交换后的最大数字](https://leetcode-cn.com/problems/largest-number-after-digit-swaps-by-parity/)
+- [x] `4 分` - [向表达式添加括号后的最小结果](https://leetcode-cn.com/problems/minimize-result-by-adding-parentheses-to-expression/)
+- [ ] `5 分` - [K 次增加后的最大乘积](https://leetcode-cn.com/problems/maximum-product-after-k-increments/)
+- [ ] `6 分` - [花园的最大总美丽值](https://leetcode-cn.com/problems/maximum-total-beauty-of-the-gardens/)
+
+### K 次增加后的最大乘积
+
+思路：求最大乘积，数字之前的差值越小他们之间的乘积越大，每次增加最小的数即可。
+
+想到了思路，但是没有想到用优先队列去解。
+
+**代码示例**
+
+```cpp
+class Solution {
+    const int MOD = 1e9 + 7;
+public:
+    int maximumProduct(vector<int>& nums, int k) {
+        priority_queue<int,vector<int>, greater<int> > pq;
+        for (auto i : nums) {
+            pq.push(i);
+        }
+
+        for (int i = 0; i < k; i++) {
+            int temp = pq.top();
+            pq.pop();
+            pq.push(temp + 1);
+        }
+
+        long long ans = 1;
+        while (!pq.empty()) {
+            // 注意，注释掉的代码是错误的。必须把结果 MOD 一遍。
+            // 因为 temp MOD 后，ans * temp 还会溢出。不满足题目要求。
+            // long long temp = pq.top() % MOD;
+            // ans = ans * temp;
+            ans = ans * pq.top() % MOD;
+            pq.pop();
+        }
+        return ans;
+    }
+};
+```
+
