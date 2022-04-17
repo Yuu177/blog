@@ -1078,3 +1078,24 @@ public:
 };
 ```
 
+## 第 289 场
+
+排名(4604 / 7293)
+
+- [x] `3 分` - [计算字符串的数字和](https://leetcode-cn.com/problems/calculate-digit-sum-of-a-string/)
+- [x] `4 分` - [完成所有任务需要的最少轮数](https://leetcode-cn.com/problems/minimum-rounds-to-complete-all-tasks/)
+- [ ] `5 分` - [转角路径的乘积中最多能有几个尾随零](https://leetcode-cn.com/problems/maximum-trailing-zeros-in-a-cornered-path/)
+- [ ] `6 分` - [相邻字符不同的最长路径](https://leetcode-cn.com/problems/longest-path-with-different-adjacent-characters/)
+
+### 完成所有任务需要的最少轮数
+
+分组小技巧，用 map 来分组。
+
+````cpp
+map<int, int> cnt;
+for (int x : tasks) cnt[x]++;
+````
+
+### 转角路径的乘积中最多能有几个尾随零
+
+待补充
