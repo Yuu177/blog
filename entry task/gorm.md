@@ -106,3 +106,7 @@ func main() {
 	db.Delete(&u)
 }
 ```
+
+## 参考文档
+
+https://gorm.io/docs/

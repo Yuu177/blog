@@ -688,7 +688,7 @@ go run -gcflags "-m -l" main.go
 
 用来解决 goroutine 之间`退出通知`、`元数据传递`的功能。在一组 goroutine 之间传递共享的值、取消信号、deadline 等。
 
-## defer 的坑
+### defer 的坑
 
 语句 `defer` 向当前的函数注册稍后执行的函数调用。直到当前函数执行结束前才被执行(如 return 和 panic)。
 
@@ -755,6 +755,25 @@ func main() {
 - 如果匿名返回值是指针，那就会影响返回值。
 
 总结：最好是用命名返回值（golang 源码也是这样子写的），省去琢磨 defer 后返回的结果。特别是有些缓冲区需要 close 才算 terminating boundary。使用 defer close 很有可能返回值会 missing the terminating boundary。（今天写测试用例就遇到了这个问题，网上查了好久。以为是代码写错了，原来是 defer 的坑）
+
+### internal 目录
+
+Go中命名为 internal 的 package **只有直接父级 package，以及父级 package 的子孙 package 可以访问**，其他的都不行，再往上的祖先 package 也不行。
+
+For example, a package …/a/b/c/internal/d/e/f can be imported only by code in the directory tree rooted at …/a/b/c. It cannot be imported by code in …/a/b/g or in any other repository.
+
+### 编译
+
+#### 交叉编译
+
+使用 GOOS、GOARCH 环境变量指定目标平台和架构。
+
+```bash
+// 交叉编译 linux 程序
+GOOS=linux go build
+// 编译 windows 程序
+GOOS=windows GOARCH=386 go build
+```
 
 ## go 工具
 
