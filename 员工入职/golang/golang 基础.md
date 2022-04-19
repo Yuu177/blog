@@ -756,6 +756,8 @@ func main() {
 
 总结：最好是用命名返回值（golang 源码也是这样子写的），省去琢磨 defer 后返回的结果。特别是有些缓冲区需要 close 才算 terminating boundary。使用 defer close 很有可能返回值会 missing the terminating boundary。（今天写测试用例就遇到了这个问题，网上查了好久。以为是代码写错了，原来是 defer 的坑）
 
+> 那些对性能要求高和压力大的算法，应该避免使用延迟调用。
+
 ### internal 目录
 
 Go中命名为 internal 的 package **只有直接父级 package，以及父级 package 的子孙 package 可以访问**，其他的都不行，再往上的祖先 package 也不行。
@@ -774,6 +776,30 @@ GOOS=linux go build
 // 编译 windows 程序
 GOOS=windows GOARCH=386 go build
 ```
+
+### panic，recover
+
+```go
+func panic(v interface{})
+func recover() interface{}
+```
+
+panic 会立刻中断当前函数流程，执行延迟调用(defer)。在延迟调用函数中，recover 可捕获并返回 panic 提交的错误对象。
+
+```go
+func main() {
+    defer func() {
+        if err := recover(); err != nil { // 捕获错误
+            log.Fatalln(err)
+        }
+    }()
+    
+    panic("i am dead") // 引发错误
+    println("exit.")   // 永远不会执行
+}
+```
+
+> 建议：除非是不可恢复性、导致系统无法正常工作的错误，否则不建议使用 panic。
 
 ## go 工具
 
