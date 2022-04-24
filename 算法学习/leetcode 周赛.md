@@ -1099,3 +1099,73 @@ for (int x : tasks) cnt[x]++;
 ### 转角路径的乘积中最多能有几个尾随零
 
 待补充
+
+## 第 290 场
+
+排名(3189 / 6275)
+
+- [x] `3 分` - [多个数组求交集](https://leetcode-cn.com/problems/intersection-of-multiple-arrays/)
+- [ ] `4 分` - [统计圆内格点数目](https://leetcode-cn.com/problems/count-lattice-points-inside-a-circle/)
+- [ ] `5 分` - [统计包含每个点的矩形数目](https://leetcode-cn.com/problems/count-number-of-rectangles-containing-each-point/)
+- [ ] `6 分` - [花期内花的数目](https://leetcode-cn.com/problems/number-of-flowers-in-full-bloom/)
+
+### 统计圆内格点数目
+
+很简单的题目，居然超时了。想到了使用枚举，但是想复杂了。
+
+- 比赛中用的方法是，通过圆计算格点，后面把重复的格点去重。
+
+**超时的写法**
+
+```c++
+class Solution {
+public:
+    int countLatticePoints(vector<vector<int>>& circles) {
+        set<string> se;
+        for (auto circle : circles) {
+            getPoints(circle, se);
+        }
+
+        return se.size();
+    }
+
+    void getPoints(const vector<int>& circle, set<string>& se) {
+        int x = circle[0];
+        int y = circle[1];
+        int r = circle[2];
+        vector<string> ans;
+
+        int left = x - r;
+        int right = x + r;
+        int up = y + r;
+        int down = y - r;
+
+        for (int i = left; i <= right; i++) {
+            for (int j = down; j <= up; j++) {
+                if (check(x, y, i, j, r)) {
+                    string point = "";
+                    point += to_string(i);
+                    point += ",";
+                    point += to_string(j);
+                    se.insert(point);
+                }
+            }
+        }
+    }
+
+    bool check(int x, int y, int xi, int yj, int r) {
+        int ans = ((x - xi) * (x - xi)) + ((y - yj) * (y - yj));
+        if (ans <= r*r) {
+            return true;
+        }
+        return false;
+    }
+};
+```
+
+但是超时了，可恶。其实写枚举题，一般看到明确的边界（且值不大的时候），就优先考虑遍历明确的边界点。像这道题的思路就是
+
+1. 1 <= circles.length <= 200
+2. 整数点的范围很小，可以枚举检测
+
+这里很明显是**遍历坐标系中的所有点，根据圆的方程过滤出落在圆上面的点**。
