@@ -50,7 +50,7 @@ follower 副本：备份leader的数据，不进行读写操作
 
 - Zookeeper
 
-kafka 集群依赖 zookeeper 来保存集群的的元信息，来保证系统的可用性。
+ZooKeeper 是一个分布式协调服务，它的主要作用是为分布式系统提供一致性服务。kafka 集群依赖 zookeeper 来保存集群的的元信息，来保证系统的可用性。
 
 **小结**
 
@@ -65,6 +65,14 @@ kafka 集群依赖 zookeeper 来保存集群的的元信息，来保证系统的
 - consume message
 
 ![consume](.resource/consume.png)
+
+### partition 的作用
+
+若没有分区，一个 topic 对应的消息集在分布式集群服务组中，就会分布不均匀，即可能导致某台服务器 A 记录当前 topic 的消息集很多，若此 topic 的消息压力很大的情况下，服务器 A 就可能导致压力很大，吞吐也容易导致瓶颈。
+
+有了分区后，假设一个 topic 可能分为 10 个分区，kafka 内部会根据一定的算法把 10 分区尽可能均匀分布到不同的服务器上，比如：A 服务器负责 topic 的分区 1，B 服务器负责 topic 的分区 2，在此情况下，Producer 发消息时若没指定发送到哪个分区的时候，kafka 就会根据一定算法上个消息可能分区 1，下个消息可能在分区 2。
+
+一句话总结：**分区对于 Kafka 集群的好处是：实现负载均衡。分区对于消费者来说，可以提高并发度，提高效率。**
 
 ### topic 和 partition
 
@@ -153,7 +161,7 @@ Kafka 的高可用保障来源于其健壮的副本(replication)策略。
 
 #### ISR
 
-分区中的所有副本统称为 AR(Assigned Repllicas)存储在 zookeeper 中，所有与 leader副本保持一定程度同步的副本(包括 Leader)组成 ISR(In-Sync Replicas)，ISR 集合是 AR 集合中的一个子集，只要 ISR 里有至少一个副本，即认为消息不会丢失。
+分区中的所有副本统称为 AR(Assigned Repllicas)存储在 zookeeper 中，所有与 leader 副本保持一定程度同步的副本(包括 Leader)组成 ISR(In-Sync Replicas)，ISR 集合是 AR 集合中的一个子集，只要 ISR 里有至少一个副本，即认为消息不会丢失。
 
 如果 follower 副本和 leader 副本数据
 
@@ -185,9 +193,26 @@ Kafka 分配 Replica 的算法如下：
 
 kafka 通过 ACK 应答机制保证消息不丢失。在生产者向队列写入数据的时候可以设置参数来确定是否确认 kafka 接收到数据，这个参数可设置的值为 **0**、**1**、**all**。
 
-- `0` 代表 producer 往集群发送数据不需要等到集群的返回，不确保消息发送成功。安全性最低但是效率最高。
-- `1` 代表 producer 往集群发送数据只要 leader 应答就可以发送下一条，只确保leader 发送成功。
-- `all` 代表 producer 往集群发送数据需要所有的 follower 都完成从 leader 的同步才会发送下一条，确保 leader 发送成功和所有的副本都完成备份。安全性最高，但是效率最低。
+- `0`  代表 producer 往集群发送数据不需要等到集群的返回，不确保消息发送成功。安全性最低但是效率最高。
+- `1`  代表 producer 往集群发送数据只要 leader 应答就可以发送下一条，只确保 leader 发送成功。
+- `all`  代表 producer 往集群发送数据需要所有的 follower 都完成从 leader 的同步才会发送下一条，确保 leader 发送成功和所有的副本都完成备份。安全性最高，但是效率最低。
+
+golang 使用 kafka 的 sarama 包 ack 参数定义如下（该参数是 new 一个 producer 实例的时候去配置）：
+
+```go
+const (
+    // NoResponse doesn't send any response, the TCP ACK is all you get.
+    NoResponse RequiredAcks = 0
+    // WaitForLocal waits for only the local commit to succeed before responding.
+    WaitForLocal RequiredAcks = 1
+    // WaitForAll waits for all in-sync replicas to commit before responding.
+    // The minimum number of in-sync replicas is configured on the broker via
+    // the `min.insync.replicas` configuration key.
+    WaitForAll RequiredAcks = -1
+)
+```
+
+Kafka 可以通过参数来限制 ISR 的数量的: min.insync.replicas = n，代表的语义是，如果生产者 acks=all，而在发送消息时，Broker 的 ISR 数量没有达到 n，Broker 不能处理这条消息，需要直接给生产者报错。
 
 ![kafka 高可用——主从同步](.resource/kafka_ack.png)
 
@@ -233,7 +258,7 @@ committed offset 只有在所有 replica 都同步完该 offset 的 message 后�
 
 #### Controller 故障
 
-Kafka 会从 Broker 中选出一个作为 Controller。
+Kafka 会从 Broker 中选出一个作为 Controller。说白了就是抢占 zk 的分布式锁。
 
 Controller 的 failover 过程如下：
 
@@ -261,13 +286,13 @@ Controller 的 failover 过程如下：
 
 #### Zookeeper Failover
 
-Kafka 底层是强依赖 Zookeeper 的(最新版不是)，如果 Zookeeper 发生故障，势必会对 Kafka 造成影响。
+Kafka 底层是强依赖 Zookeeper 的**(注意：Apache Kafka2.8 版本之后可以不需要使用ZooKeeper)**，如果 Zookeeper 发生故障，势必会对 Kafka 造成影响。
 
 Zookeeper 故障大致分为：Zookeeper Dead、Zookeeper Hang 两种。
 
 ##### Zookeeper Dead
 
-这种情况下 Broker 是无法启动的，因为连不上 Zookeeper，Kafka 完全无法工作直到Zookeeper 恢复正常服务为止。
+这种情况下 Broker 是无法启动的，因为连不上 Zookeeper，Kafka 完全无法工作直到 Zookeeper 恢复正常服务为止。
 
 ##### Zookeeper Hang
 
@@ -277,6 +302,42 @@ Session Timeout 就引发如下问题：
 
 - Controller fail，触发 Controller 重新选举
 - Broker fail，触发 Partition 的 Leader 切换 or Partition offline
+
+### 消息持久化
+
+Producer 将数据写入 kafka 后，集群就需要对数据进行保存了，kafka 将数据保存在磁盘，可能在我们的一般的认知里，写入磁盘是比较耗时的操作，不适合这种高并发的组件。 Kafka 初始会单独开辟一块磁盘空间，顺序写入数据（效率比随机写入高）。
+
+#### Partition 结构
+
+Partition 在服务器上的表现形式就是一个一个的文件夹，每个 partition 的文件夹下面会有多组 segment 文件，每组 segment 文件又包含 .index 文件、.log 文件、.timeindex 文件（早期版本中没有）三个文件， log 文件就实际是存储 message 的地方，而 index 和 timeindex 文件为索引文件，用于检索消息。
+
+![partition结构](.resource/partition结构.png)
+
+如上图，这个 partition 有三组 segment 文件，每个 log 文件的大小是一样的，但是存储的 message 数量是不一定相等的（每条的 message 大小不一致）。
+
+文件的命名是以该 segment 最小 offset 来命名的，如 000.index 存储 offset 为 0~368795 的消息。
+
+kafka 就是利用**分段+索引**的方式来解决查找效率的问题。
+
+#### Message结构
+
+上面说到 log 文件就实际是存储 message 的地方，我们在 producer 往 kafka 写入的也是一条一条的 message，那存储在 log 中的 message 是什么样子的呢？消息主要包含消息体、消息大小、offset、压缩类型……等等！我们重点需要知道的是下面三个：
+
+1、 offset：offset 是一个占 8byte 的有序 id 号，它可以唯一确定每条消息在 partition 内的位置！
+
+2、 消息大小：消息大小占用 4byte，用于描述消息的大小。
+
+3、 消息体：消息体存放的是实际的消息数据（被压缩过），占用的空间根据具体的消息而不一样。
+
+#### 存储策略
+
+无论消息是否被消费，kafka 都会保存所有的消息。那对于旧数据有什么删除策略呢？
+
+1、 基于时间，默认配置是 168 小时（7 天）。
+
+2、 基于大小，默认配置是 1073741824。
+
+需要注意的是，kafka 读取特定消息的时间复杂度是 O(1)，所以这里删除过期的文件并不会提高 kafka 的性能。
 
 ## kafka 安装
 
