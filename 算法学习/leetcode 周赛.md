@@ -1169,3 +1169,85 @@ public:
 2. 整数点的范围很小，可以枚举检测
 
 这里很明显是**遍历坐标系中的所有点，根据圆的方程过滤出落在圆上面的点**。
+
+## 第 291 场
+
+排名(3953 / 6574)
+
+- [x] `3 分` - [移除指定数字得到的最大结果](https://leetcode-cn.com/problems/remove-digit-from-number-to-maximize-result/)
+- [x] `4 分` - [必须拿起的最小连续卡牌数](https://leetcode-cn.com/problems/minimum-consecutive-cards-to-pick-up/)
+- [x] `5 分` - [含最多 K 个可整除元素的子数组](https://leetcode-cn.com/problems/k-divisible-elements-subarrays/)
+- [ ] `6 分` - [字符串的总引力](https://leetcode-cn.com/problems/total-appeal-of-a-string/)
+
+这次周赛题目不难，主要还是时间问题。11 点才开始做，第三题没来得急提交就结束了。
+
+### 含最多 K 个可整除元素的子数组
+
+还有枚举出所有的子数组的时候一开始想的是回溯法，想复杂了，后续改成了嵌套 for 循环就可以了。而且代码也写复杂了，枚举完才计算。其实可以边枚举边计算，用 set 去重就可以了。
+
+- 比赛的代码
+
+```c++
+class Solution {
+public:
+    int countDistinct(vector<int>& nums, int k, int p) {
+        map<string, vector<int>> mp;
+        for (int i = 0; i < nums.size(); i++) {
+            vector<int> tempArr;
+            string temp = "";
+            for (int j = i; j < nums.size(); j++) {
+                tempArr.push_back(nums[j]);
+                temp += ",";
+                temp += to_string(nums[j]);
+                mp[temp] = tempArr;
+            }
+        }
+        int ans = 0;
+        for (auto& it : mp) {
+            if (check(it.second, k, p)) {
+                ans++;
+            }
+        }
+        return ans;
+    }
+
+    bool check(const vector<int>& arr, int k, int p) {
+        int sum = 0;
+        for (auto i : arr) {
+            if (i % p == 0) {
+                sum++;
+            }
+        }
+        return sum <= k;
+    }
+};
+```
+
+- 优化的代码
+
+```c++
+class Solution {
+public:
+    int countDistinct(vector<int>& nums, int k, int p) {
+        int n = nums.size();
+        unordered_set<string> st;
+
+        for (int i = 0; i < n; i++) {
+            string t;
+            int cnt = 0;
+            for (int j = i; j < n; j++) {
+                if (nums[j] % p == 0) cnt++;
+                if (cnt > k) break;
+                t += to_string(nums[j]) + "|";
+                st.insert(t);
+            }
+        }
+        return st.size();
+    }
+};
+```
+
+### 字符串的总引力
+
+待补充
+
