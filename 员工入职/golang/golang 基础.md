@@ -784,6 +784,8 @@ For example, a package …/a/b/c/internal/d/e/f can be imported only by code in 
 GOOS=linux go build
 // 编译 windows 程序
 GOOS=windows GOARCH=386 go build
+// 编译 macos 程序
+GOOS=darwin GOARCH=amd64 go build
 ```
 
 ### panic，recover
