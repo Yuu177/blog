@@ -1,3 +1,5 @@
+[TOC]
+
 # typecho 网站搭建
 
 ## LNMP 环境安装
@@ -63,7 +65,7 @@ server {
     # 在某些老版本的php里面，可能还要打开php.ini里的cgi.fix_pathinfo
 	# cgi.fix_pathinfo = 1
     location ~ .*\.php(\/.*)*$ { # location ~ \.php$ 修改为 location ~ .*\.php(\/.*)*$
-        root           /usr/share/nginx/html; # 修改为你的网站目录
+        root           /data/www/myblog; # 修改为你的网站目录
         fastcgi_pass   unix:/run/php-fpm/www.sock;
         fastcgi_index  index.php;
         fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
