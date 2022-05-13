@@ -81,6 +81,8 @@ server {
 }
 ```
 
+修改配置文件后记得重启一下 nginx 使配置生效 `systemctl restart nginx`
+
 ### 开始安装 typecho
 
 在浏览器输入 `ip/install.php` 进入安装步骤。一开始我们创建的数据库名这里就派上用场了。填入完信息，大功告成。
