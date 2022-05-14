@@ -552,9 +552,7 @@ func myfunc() func() int { // 返注意返回值，这里返回一个函数
 
 ### 指针接收器和值接收器
 
-方法接收者为对象的指针与值有什么区别呢？
-
-如果方法接收者为对象的**指针**，则会修改原对象；如果方法接收者为对象的值，那么在方法中被操作的是原对象的副本，不会影响原对象。
+- 如果方法接收器为对象的**指针**，则会修改原对象；如果方法接收器为对象的值，那么在方法中被操作的是原对象的副本，不会影响原对象。
 
 ```go
 package main  
@@ -588,7 +586,88 @@ func main() {
 
 ```
 
-如何选择方法的 receiver 类型？
+- 当方法接收器为指针的时候，如果传入的是值，那么会报错。
+
+```golang
+package main
+
+import "fmt"
+
+type Animal interface {
+	Speak() string
+}
+
+type Dog struct {
+}
+
+func (d Dog) Speak() string {
+	return "Woof!"
+}
+
+type Cat struct {
+}
+
+func (c Cat) Speak() string {
+	return "Meow!"
+}
+
+func main() {
+	var a Animal = Dog{}
+	fmt.Printf("a.Speak(): %v\n", a.Speak())
+
+	var b Animal = Cat{}
+	fmt.Printf("b.Speak(): %v\n", b.Speak())
+}
+
+// 输出结果
+// a.Speak(): Woof!
+// b.Speak(): Meow!
+```
+
+这里我们把值接收器修改为指针接收器，运行一遍
+
+```golang
+// func (c Cat) Speak() string
+func (c *Cat) Speak() string
+```
+
+再运行一遍
+
+```bash
+# command-line-arguments
+./main.go:27:6: cannot use Cat{} (type Cat) as type Animal in assignment:
+        Cat does not implement Animal (Speak method has pointer receiver)
+```
+
+该错误的意思是：你尝试将 `Cat` 转为 `Animal` ，但是只有 `*Cat` 类型实现了该接口。你可以通过传入一个指针 （`new(Cat)` 或者 `&Cat{}`）来修复这个错误。
+
+```go
+var b Animal = &Cat{}
+```
+
+让我们做一些相反的事情：我们传入一个 `*Dog` 指针，但是不改变 `Dog` 的 `Speak()` 方法：
+
+```go
+var a Animal = &Dog{}
+```
+
+这种方式可以正常工作，因为一个指针类型可以通过其相关的值类型来访问值类型的方法（这句话可能有点绕。其实就是 ptr---> value，我们可以用 value 的类型访问 value 类型中的方法），但是反过来不行。即，一个 `*Dog` 类型的值可以使用定义在 `Dog` 类型上的 `Speak()` 方法，而 `Cat` 类型的值不能访问定义在 `*Cat` 类型上的方法。
+
+这可能听起来很神秘，但当你记住以下内容时就清楚了：Go 中的所有东西都是按值传递的。每次调用函数时，传入的数据都会被复制。对于具有值接收者的方法，在调用该方法时将复制该值。例如下面的方法：
+
+```go
+func (t T) MyMethod(s string) {
+    // ...
+}
+```
+
+是 `func(T, string)` 类型的方法。方法接收器像其他参数一样通过值传递给函数。
+
+因为所有的参数都是通过值传递的，这就可以解释为什么 `*Cat` 的方法不能被 `Cat` 类型的值调用了。任何一个  `Cat` 类型的值可能会有很多 `*Cat` 类型的指针指向它，如果我们尝试通过 `Cat` 类型的值来调用 `*Cat` 的方法，根本就不知道对应的是哪个指针。相反，如果 `Dog` 类型上有一个方法，通过 `*Dog` 来调用这个方法可以确切的找到该指针对应的 `Gog` 类型的值，从而调用上面的方法。运行时，Go 会自动帮我们做这些，所以我们不需要像 C语言中那样使用类似如下的语句 `d->Speak()` 。
+
+小结一下：定义指针方法接收器只能用指针调用，值接受器既可以用指针，可以用值去调用。
+
+**如何选择方法的 receiver 类型？**
 
 - 要修改实例状态，用 *T。
 - 无需修改状态的小对象或固定值，建议用 T。
