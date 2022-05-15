@@ -1247,7 +1247,41 @@ public:
 };
 ```
 
-### 字符串的总引力
+## 第 292 场
 
-待补充
+排名(4286 / 7356)
+
+- [x] [移除字母异位词后的结果数组](https://leetcode.cn/problems/find-resultant-array-after-removing-anagrams/)
+
+- [x] [不含特殊楼层的最大连续楼层数](https://leetcode.cn/problems/maximum-consecutive-floors-without-special-floors/)
+
+- [ ] [按位与结果大于零的最长组合](https://leetcode.cn/problems/largest-combination-with-bitwise-and-greater-than-zero/)
+
+- [ ] [统计区间中的整数数目](https://leetcode.cn/problems/count-integers-in-intervals/)
+
+第一题做的太慢了，以后一定要想明白再动手。第三题有点脑筋急转弯的意思，一开始就陷入了滑动窗口的陷阱（没注意看题）。
+
+### 按位与结果大于零的最长组合
+
+思路：我们枚举按位与的结果哪一位不是零，那么这一位不是零的所有数都可以参与按位与。选择最多数参与的那一位作为答案即可。
+
+```c++
+class Solution {
+public:
+    int largestCombination(vector<int>& candidates) {
+        int maxx = 0;
+        for (int i = 0; i <= 30; i++) {
+            int t = 0;
+            for (int a : candidates) {
+                if ((1 << i) & a) {
+                    t++;
+                }
+            }
+            maxx = max(t, maxx);
+        }
+
+        return maxx;
+    }
+};
+```
 
