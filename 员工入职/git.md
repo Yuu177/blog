@@ -124,6 +124,105 @@ git push --set-upstream origin newName
 
 `git pull --set-upstream origin main`
 
+## 合并多个 commit 为一个 commit
+
+- 当前 git log 记录
+
+```bash
+* fa7fd6f22 - five ci (2 分钟前) <Panyu Tan>
+* 28692885b - four ci (3 分钟前) <Panyu Tan>
+* a305a466b - three ci (31 分钟前) <Panyu Tan>
+* 72e242e40 - second ci (31 分钟前) <Panyu Tan>
+* bcbb966e2 - first ci (32 分钟前) <Panyu Tan>
+* 6a97ce7d2 - fix public fiels content (20 小时前) <Panyu Tan>
+```
+
+### 场景一
+
+我们要把 first ~ five 五个提交合并为一个 merge all
+
+- `git rebase -i 6a97ce7d2`
+
+从 `6a97ce7d2 - fix public fiels content` **下一个提交**到最新的节点进行合并。这个命令就是把 first ci 的提交到最新的提交(five ci) 准备要进行合并 commit。
+
+其中 -i 的意思是 --interactive，即弹出交互式的界面让用户编辑完成合并操作。
+
+接下来会进入 vi 界面。如下：
+
+```bash
+pick bcbb966e2 first ci
+pick 72e242e40 second ci                                                                                                                                                       
+pick a305a466b three ci
+pick 28692885b four ci
+pick fa7fd6f22 five ci
+
+# p, pick <提交> = 使用提交
+# s, squash <提交> = 使用提交，但挤压到前一个提交
+```
+
+编辑修改为：
+
+```bash
+pick bcbb966e2 first ci  # 使用 first 提交记录
+s    72e242e40 second ci # second 合并到 first                                                                                                                                               
+s    a305a466b three ci  # three 合并到上一个提交，因为 second 合并到 first 了，所以 three 也会合并到 first
+s    28692885b four ci   # 同上
+s    fa7fd6f22 five ci   # 同上
+```
+
+修改完后 wq 保存。接下来再次进入 vi 的编辑界面，重新编辑提交记录。
+
+```bash
+# 这是一个 5 个提交的组合。                                                                                                                                                      
+# 这是第一个提交说明：
+
+first ci
+ 
+# 这是提交说明 #2：
+ 
+second ci
+ 
+# 这是提交说明 #3：
+  
+three ci
+
+# 这是提交说明 #4：
+ 
+four ci
+
+# 这是提交说明 #5：
+ 
+five ci
+```
+
+因为 # 行会被忽略，所以我们只保留一行没有 # 即可。如下
+
+```bash
+# 这是一个 5 个提交的组合。                                                
+merge all
+```
+
+wq 保存退出。接下我们再来查看 git log。发现 5 个提交已经被合并为一个了。
+
+```bash
+* 60cc96e41 - merge all (3 分钟前) <Panyu Tan>
+* 6a97ce7d2 - fix public fiels content (20 小时前) <Panyu Tan>
+```
+
+### 场景二
+
+我想把 first 和 second 两个合并为一个commit。three four five 这三个提交合并为一个 commit。
+
+根据刚才的实践，我们只需要这样子修改即可。
+
+```bash
+pick bcbb966e2 first ci  # 使用 first 提交记录
+s    72e242e40 second ci # second 合并到 first                                                                                                                                               
+pick a305a466b three ci  # 使用 three 提交记录
+s    28692885b four ci   # four 合并到 three 
+s    fa7fd6f22 five ci   # five 合并到 three
+```
+
 ## git 问题
 
 - git status 乱码
