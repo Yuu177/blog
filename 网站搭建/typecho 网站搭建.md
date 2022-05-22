@@ -87,6 +87,19 @@ server {
 
 在浏览器输入 `ip/install.php` 进入安装步骤。一开始我们创建的数据库名这里就派上用场了。填入完信息，大功告成。
 
+### 域名与 DNS 解析设置
+
+可以给自己的 Typecho 网站设定一个单独的域名。别人可以使用易记的域名访问您的网站，而不需要使用复杂的 IP 地址。下面是腾讯云的操作步骤：
+
+1. 通过腾讯云 [购买域名](https://dnspod.cloud.tencent.com/?from=qcloud)，具体操作请参考 [域名注册](https://cloud.tencent.com/document/product/242/9595)。
+2. 进行 [网站备案](https://cloud.tencent.com/product/ba?from=qcloudHpHeaderBa&fromSource=qcloudHpHeaderBa)。
+   域名指向中国境内服务器的网站，必须进行网站备案。在域名获得备案号之前，网站是无法开通使用的。您可以通过腾讯云免费进行备案，审核时长请参考 [备案审核](https://cloud.tencent.com/document/product/243/19650)。
+3. 通过腾讯云 [DNS解析 DNSPod](https://cloud.tencent.com/product/cns?from=qcloudHpHeaderCns&fromSource=qcloudHpHeaderCns) 配置域名解析。具体操作请参考 [A 记录](https://cloud.tencent.com/document/product/302/3449)，将域名指向一个 IP 地址（外网地址）。
+
+### 开启 HTTPS 访问
+
+可参考 [安装 SSL 证书](https://cloud.tencent.com/document/product/1207/47027) 文档为您的 Typecho 实例安装 SSL 证书并开启 HTTPS 访问。
+
 ## 补充其他
 
 ### PHP-FPM
