@@ -1285,3 +1285,40 @@ public:
 };
 ```
 
+## 第 293 场
+
+排名(2557 / 6640)
+
+- [x] `3 分` - [字母在字符串中的百分比](https://leetcode-cn.com/problems/percentage-of-letter-in-string/)
+- [x] `4 分` - [装满石头的背包的最大数量](https://leetcode-cn.com/problems/maximum-bags-with-full-capacity-of-rocks/)
+- [x] `5 分` - [表示一个折线图的最少线段数](https://leetcode-cn.com/problems/minimum-lines-to-represent-a-line-chart/)
+- [ ] `6 分` - [巫师的总力量和](https://leetcode-cn.com/problems/sum-of-total-strength-of-wizards/)
+
+### 表示一个折线图的最少线段数
+
+第三题卡测试用例了，一开始死活发现不了。后面发现求斜率的时候不要用除法，会丢失精度。
+
+求两点的斜率
+
+已知 A(x1，y1)，B(x2，y2)
+
+1、若 x1=x2，则斜率不存在。x1=x2，x2-x1=0，k=[y2－y1]/[x2－x1] 无意义。
+
+2、若 x1≠x2，则斜率 k=[y2－y1]/[x2－x1]。
+
+但是这道题如果直接除，求斜率 k 的话，精度会丢失。
+
+我们可以通过判断三个点是否在同一条直线上，用乘法来求。
+
+```
+已知 A(x1，y1)，B(x2，y2)，C(x3, y3)
+Δx1 = x2 - x1
+Δy1 = y2 - y1
+k1 = Δy1 / Δx1
+Δx2 = x3 - x2
+Δy2 = y3 - y2
+k2 = Δy2 / Δx2
+要判断 k1 == k2，我们可以转换为
+Δy1 / Δx1 = Δy2 / Δx2 => Δx1 * Δy2 = Δy1 * Δx2
+```
+
