@@ -55,3 +55,7 @@ Show TODO, FIXME, etc. comment tags in a tree view
 - Shades of Purple
 
 好看的一个主题
+
+- Bookmarks
+
+经常在文档几个不同位置跳来跳去的，这个书签插件很实用，右键菜单里直接设置/取消书签，快捷键在不同的书签位置跳转，左边还有当前书签列表，双击立马跳转。
