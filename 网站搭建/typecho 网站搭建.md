@@ -6,86 +6,131 @@
 
 [手动搭建 LNMP 环境（CentOS 8）](https://cloud.tencent.com/document/product/213/49304)
 
-因为安装 typecho 需要依赖 LNMP 环境，所以无脑按照腾讯云的步骤来就可以了。
+因为安装 typecho 需要依赖 LNMP 环境，所以无脑按照腾讯云的步骤来就可以了。以下步骤是建立在按照这个基础上修改的，请务必对齐配置。
 
-## typecho 安装
-
-### 登陆 mysql 创建数据库
-
-待会需要用到创建的数据库名
-
-```sql
-create database my_blog;
-```
+## typecho 部署
 
 ### 上传  typecho.zip 文件
 
 在 linux 机器上创建好网站目录，并上传下载好的 [typecho.zip](http://typecho.org/download) 文件。不建议创建目录在 /root 下面。我试过发现怎么也访问不到，后面换其他目录就好了。
 
-这里我们选择上传文件到 /home/www/myblog/ 下（没有就自己创建目录）。解压 typecho.zip 后再添加权限 `chmod -R 777 myblog`。因为待会安装需要网站目录的读写权限。
+这里我们选择上传文件到 /usr/share/nginx/html/ 下。解压 typecho.zip 后再添加权限 `chmod -R 777 html`。因为待会安装需要网站目录的读写权限。
 
-### 修改 default.conf 文件
+### 配置 nginx
 
-```nginx
+> 配置之前记得备份一下文件，下面的配置文件都是默认开启 https。
+
+- /etc/nginx/conf.d/default.conf
+- /etc/nginx/nginx.conf
+
+#### 修改 default.conf
+
+配置文件照抄就行。
+
+>ssl 的证书文件和私钥文件上传到 /etc/nginx/ 目录下用来开启 https，参考后续内容。
+
+```bash
+# 如果不开启 https，那么把 ssl_ 前缀的相关行注释掉即可。并且把 listen 433 ssl 改为 listen 80
 server {
-    listen       80;
-    server_name  localhost;
+    listen 443 ssl; # 监听 433 ssl 端口
+    server_name  cr7.life; # 填写你的网站域名
+    
+    # ssl 配置
+    ssl_certificate cr7.life_bundle.crt; # 填写您的证书文件名称
+    ssl_certificate_key cr7.life.key; # 填写您的私钥文件名称
+    ssl_session_timeout 5m;
+    ssl_protocols  TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;
+    ssl_prefer_server_ciphers on;
 
-    #charset koi8-r;
-    #access_log  /var/log/nginx/host.access.log  main;
+    root /usr/share/nginx/html; # 你的网站的目录
 
-    location / {
-        root   /data/www/myblog; # 修改为你的网站目录
-        index  index.php index.html index.htm; # 这里把 index.php 放在第一位，这样子 / 会默认优先访问 index.php
-    }
-
-    #error_page  404              /404.html;
-
-    # redirect server error pages to the static page /50x.html
-    #
     error_page   500 502 503 504  /50x.html;
     location = /50x.html {
         root   /usr/share/nginx/html;
     }
 
-    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
-    #
-    #location ~ \.php$ {
-    #    proxy_pass   http://127.0.0.1;
-    #}
+    include /etc/nginx/default.d/*.conf;
 
-    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
-    #
-    #location ~ \.php$ {
-    # Nginx服务器无法登录后台，点击前台链接或者后台登录时出现"404, not found"
-    # 一般的出现这种情况时,nginx.conf里的的location设置都是类似这样
-    # location ~ .*\.php$
-    # 要支持pathinfo，要改成
-    # location ~ .*\.php(\/.*)*$
-    # 在某些老版本的php里面，可能还要打开php.ini里的cgi.fix_pathinfo
-	# cgi.fix_pathinfo = 1
-    location ~ .*\.php(\/.*)*$ { # location ~ \.php$ 修改为 location ~ .*\.php(\/.*)*$
-        root           /data/www/myblog; # 修改为你的网站目录
-        fastcgi_pass   unix:/run/php-fpm/www.sock;
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    location ~ \.php$ {
         include        fastcgi_params;
+        fastcgi_pass unix:/run/php-fpm/www.sock;
+	    client_max_body_size 20m;
+        fastcgi_connect_timeout 30s;
+        fastcgi_send_timeout 30s;
+        fastcgi_read_timeout 30s;
+        fastcgi_intercept_errors on;
     }
+}
 
-    # deny access to .htaccess files, if Apache's document root
-    # concurs with nginx's one
-    #
-    #location ~ /\.ht {
-    #    deny  all;
-    #}
+# 如果不开启 https，就把这个 server 去掉
+server {
+    listen 80;
+    server_name cr7.life;    # 填写您的证书绑定的域名
+    return 301 https://$host$request_uri; # 将 http 的域名请求转成 https
 }
 ```
 
-修改配置文件后记得重启一下 nginx 使配置生效 `systemctl restart nginx`
+#### 修改 nginx.conf
+
+配置文件照抄。
+
+```bash
+user  nginx;
+worker_processes auto;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+include /usr/share/nginx/modules/*.conf;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile            on;
+    tcp_nopush          on;
+    tcp_nodelay         on;
+    keepalive_timeout   65;
+    types_hash_max_size 2048;
+
+    #gzip  on;
+	
+	# https ssl 配置。如果不开启 https，注释掉即可。
+    ssl_certificate cr7.life_bundle.crt; # 填写您的证书文件名称
+    ssl_certificate_key cr7.life.key; # 填写您的私钥文件名称
+
+    include /etc/nginx/conf.d/*.conf;
+}
+```
+
+修改完配置文件后，输入命令 `nginx -t ` 检查配置文件是否有问题。
+
+重启一下 nginx 使配置生效 `sudo systemctl restart nginx`。
+
+### 创建 mysql 数据库
+
+登录到 mysql 创建待会需要用到的据库名，如：
+
+```sql
+create database my_blog;
+```
 
 ### 开始安装 typecho
 
 在浏览器输入 `ip/install.php` 进入安装步骤。一开始我们创建的数据库名这里就派上用场了。填入完信息，大功告成。
+
+***注意**：**站点信息**这一栏一开始我们没有申请域名的话可以先填你的外网 ip。后面如果要用域名访问的话，需要修改成你的域名地址。*
 
 ### 域名与 DNS 解析设置
 
