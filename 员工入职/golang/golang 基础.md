@@ -776,9 +776,9 @@ go run -gcflags "-m -l" main.go
 
 用来解决 goroutine 之间`退出通知`、`元数据传递`的功能。在一组 goroutine 之间传递共享的值、取消信号、deadline 等。
 
-### defer 的坑
+### defer
 
-语句 `defer` 向当前的函数注册稍后执行的函数调用。直到当前函数执行结束前才被执行(如 return 和 panic)。
+语句 `defer` 向当前的函数注册稍后执行的函数调用。直到当前函数执行结束前才被执行。所以就算在函数内发送 panic 也会执行里面的 defer func。
 
 > 注意：延迟调用可修改当前函数命名返回值
 

@@ -1247,7 +1247,7 @@ public:
 };
 ```
 
-## 第 292 场
+## 第 293 场
 
 排名(4286 / 7356)
 
@@ -1285,7 +1285,7 @@ public:
 };
 ```
 
-## 第 293 场
+## 第 294 场
 
 排名(2557 / 6640)
 
@@ -1322,3 +1322,36 @@ k2 = Δy2 / Δx2
 Δy1 / Δx1 = Δy2 / Δx2 => Δx1 * Δy2 = Δy1 * Δx2
 ```
 
+## [第 295 场周赛](https://leetcode.cn/contest/weekly-contest-295/) 
+
+排名(1856 / 6447)
+
+- [x] `3 分` - [重排字符形成目标字符串](https://leetcode-cn.com/problems/rearrange-characters-to-make-target-string/)
+- [x] `4 分` - [价格减免](https://leetcode-cn.com/problems/apply-discount-to-prices/)
+- [ ] `5 分` - [使数组按非递减顺序排列](https://leetcode-cn.com/problems/steps-to-make-array-non-decreasing/)
+- [ ] `6 分` - [到达角落需要移除障碍物的最小数目](https://leetcode-cn.com/problems/minimum-obstacle-removal-to-reach-corner/)
+
+只写出了前两道。第三题有点难（跳过）。
+
+### 到达角落需要移除障碍物的最小数目
+
+待补充
+
+## [第 297 场力扣周赛](https://leetcode.cn/contest/weekly-contest-297)
+
+排名(3235 / 5915)
+
+- [x] `3 分` - [计算应缴税款总额](https://leetcode-cn.com/problems/calculate-amount-paid-in-taxes/)
+- [ ] `5 分` - [网格中的最小路径代价](https://leetcode-cn.com/problems/minimum-path-cost-in-a-grid/)
+- [ ] `5 分` - [公平分发饼干](https://leetcode-cn.com/problems/fair-distribution-of-cookies/)
+- [ ] `6 分` - [公司命名](https://leetcode-cn.com/problems/naming-a-company/)
+
+这周周赛没有思路第二第三题。
+
+### 网格中的最小路径代价
+
+动态规划。待补充
+
+### 公平分发饼干
+
+注意数据集大小，直接暴力枚举即可。待补充

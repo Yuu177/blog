@@ -240,3 +240,7 @@ s    fa7fd6f22 five ci   # five 合并到 three
 设置一下 git config http.sslVerify "false"
 
 参考链接：https://stackoverflow.com/questions/54611871/ssh-exchange-identification-read-connection-reset-by-peer-error-when-trying
+
+## git 快捷别名配置
+
+安装完 Oh-my-zsh 会自动配置 git 命令的别名: ~/.oh-my-zsh/plugins/git/git.plugin.zsh
