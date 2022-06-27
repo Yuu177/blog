@@ -24,7 +24,7 @@ service 文件怎么写，待补充
 
 ## journal
 
-CentOS 7 以后版本，利用Systemd 统一管理所有 Unit 的**启动**日志。带来的好处就是，可以只用 journalctl 一个命令，查看所有日志（内核日志和应用日志）。
+CentOS 7 以后版本，利用 Systemd 统一管理所有 Unit 的**启动**日志。带来的好处就是，可以只用 journalctl 一个命令，查看所有日志（内核日志和应用日志）。
 
 systemd为我们提供了一个统一中心化的日志系统: journal
 
@@ -44,8 +44,19 @@ journalctl -u nginx.service
 # -r reverse 从尾部看日志
 journalctl -r
 # journalctl 日志太长了会被截断显示不全
-journalctl -n 40 -u nginx.service 
+journalctl -n 40 -u nginx.service
 # 建议使用 vim 打开查看日志
 journalctl -n 40 -u nginx.service | vim -
 ```
+
+参考链接：https://zhuanlan.zhihu.com/p/410995772
+
+### 通过 Systemd Journal 收集日志
+
+systemd journal 收集日志的方式：
+
+- 程序使用库中的 syslog 函数输出的日志使用。
+- 任何服务进程输出到 STDOUT/STDERR 的所有内容。
+
+注意，只有以 service 的方式运行程序时，journal 才会捕获 STDOUT/STDERR 输出的内容。像 golang 默认的 print 和 panic 打印的堆栈信息就会被 systemd journal 采集到。
 
