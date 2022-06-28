@@ -549,6 +549,8 @@ func save2File(data []byte, filePath string) {
 
 闭包指的是一个函数和与其相关的引用环境组合而成的实体。简单来说，`闭包 = 函数 + 引用环境`。
 
+- 例子一
+
 ```go
 func myfunc() func() int { // 返注意返回值，这里返回一个函数
     i := 0
@@ -556,6 +558,37 @@ func myfunc() func() int { // 返注意返回值，这里返回一个函数
         i += 1 // 可以使用匿名函数外的变量
         return i
     }
+}
+```
+
+- 例子二：监控会入侵业务代码，我们可以对代码进行包装如下
+
+```go
+func main() {
+	// expose prometheus metrics 接口
+	http.Handle("/metrics", promhttp.Handler())
+	http.HandleFunc("/query", monitor.Monitor(Query))
+	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// query
+func Query(w http.ResponseWriter, r *http.Request) {
+	//模拟业务查询耗时 0~1s
+	time.Sleep(time.Duration(rand.Intn(1000)) * time.Millisecond)
+	_, _ = io.WriteString(w, "some results")
+}
+
+// monitor 包定义包装 handler function，不侵入业务逻辑
+func Monitor(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		h(w, r)
+		duration := time.Since(start)
+		// counter 类型 metric 的记录方式
+		WebRequestTotal.With(prometheus.Labels{"method": r.Method, "endpoint": r.URL.Path}).Inc()
+		// Histogram 类型 meric 的记录方式
+		WebRequestDuration.With(prometheus.Labels{"method": r.Method, "endpoint": r.URL.Path}).Observe(duration.Seconds())
+	}
 }
 ```
 
