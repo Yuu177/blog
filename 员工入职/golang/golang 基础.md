@@ -1084,3 +1084,39 @@ func main() {
 // se.String(): Set{tpy}
 ```
 
+## 踩坑记录
+
+### 全局变量用 := 赋值变成重新定义同名局部变量
+
+> 所以最好不要用全局变量
+
+```go
+package main
+
+import "fmt"
+
+var a int
+
+func main() {
+	// 当声明全局变量时候，不要用 := 再次对全局变量赋值
+	// 此时这里的 a 变成重新定义和初始化同名的局部变量
+	a, b := 10, 100
+	fmt.Printf("main a: %v, &a: %v\n", a, &a)
+	fmt.Printf("main b: %v\n", b)
+	test01()
+}
+
+func test01() {
+	fmt.Printf("test01 a: %v, &a: %v\n", a, &a) // 这里的 a 是全局变量
+}
+
+```
+
+输出：
+
+```bash
+main a: 10, &a: 0xc000014098
+main b: 100
+test01 a: 0, &a: 0x1164e48
+```
+
