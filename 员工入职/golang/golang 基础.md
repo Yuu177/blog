@@ -1120,3 +1120,12 @@ main b: 100
 test01 a: 0, &a: 0x1164e48
 ```
 
+## go 三方包
+
+> 一些好用的第三方包
+
+- go-echarts 画图包
+
+https://github.com/go-echarts/go-echarts/blob/master/README_CN.md
+
+不用 python 也能画出好看的图了。

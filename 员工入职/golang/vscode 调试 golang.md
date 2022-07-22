@@ -4,6 +4,8 @@
 
 1、配置 vscode launc.json 如下
 
+> 不需要手动配置，点击 debug 调试的时候 vscode 就会默认帮你配置好了
+
 ```json
 {
     // 使用 IntelliSense 了解相关属性。
